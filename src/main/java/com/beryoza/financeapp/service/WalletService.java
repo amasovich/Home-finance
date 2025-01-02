@@ -2,15 +2,16 @@ package com.beryoza.financeapp.service;
 
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.model.Wallet;
+import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.List;
 
 /**
  * Сервис для управления кошельками.
- * Отвечает за добавление, удаление кошельков и получение информации о них.
+ * Добавлены проверки корректности вводимых данных.
  */
 public class WalletService {
-    private final UserService userService; // Для работы с пользователями
+    private final UserService userService;
 
     /**
      * Конструктор. Получает ссылку на сервис пользователей.
@@ -29,6 +30,18 @@ public class WalletService {
      * @param initialBalance Начальный баланс кошелька.
      */
     public void addWallet(User user, String walletName, double initialBalance) {
+        if (!DataValidator.isNonEmptyString(walletName)) {
+            throw new IllegalArgumentException("Название кошелька не может быть пустым.");
+        }
+        if (initialBalance < 0) {
+            throw new IllegalArgumentException("Начальный баланс не может быть отрицательным.");
+        }
+
+        List<Wallet> wallets = user.getWallets();
+        if (wallets.stream().anyMatch(wallet -> wallet.getName().equals(walletName))) {
+            throw new IllegalArgumentException("Кошелёк с таким названием уже существует.");
+        }
+
         Wallet newWallet = new Wallet(walletName, initialBalance);
         user.addWallet(newWallet);
     }
@@ -40,8 +53,16 @@ public class WalletService {
      * @param walletName Название кошелька, который нужно удалить.
      */
     public void removeWallet(User user, String walletName) {
+        if (!DataValidator.isNonEmptyString(walletName)) {
+            throw new IllegalArgumentException("Название кошелька не может быть пустым.");
+        }
+
         List<Wallet> wallets = user.getWallets();
-        wallets.removeIf(wallet -> wallet.getName().equals(walletName));
+        if (wallets.removeIf(wallet -> wallet.getName().equals(walletName))) {
+            System.out.println("Кошелёк успешно удалён.");
+        } else {
+            System.out.println("Кошелёк с таким названием не найден.");
+        }
     }
 
     /**
