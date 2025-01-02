@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Adding a prepared Transaction class / add docs">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Adding a prepared classes in service package">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/FileRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/FileRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/UserRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +112,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735806829189</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Adding a prepared classes in service package">
+      <option name="closed" value="true" />
+      <created>1735807193353</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1735807193353</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -122,6 +130,7 @@
     <MESSAGE value="Adding a prepared Wallet class" />
     <MESSAGE value="Adding a prepared Transaction class" />
     <MESSAGE value="Adding a prepared Transaction class / add docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding a prepared Transaction class / add docs" />
+    <MESSAGE value="Adding a prepared classes in service package" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding a prepared classes in service package" />
   </component>
 </project>
