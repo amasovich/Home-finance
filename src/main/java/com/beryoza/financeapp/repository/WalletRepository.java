@@ -1,12 +1,15 @@
 package com.beryoza.financeapp.repository;
 
+import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.Wallet;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Репозиторий для работы с данными кошельков.
+ * Репозиторий для работы с данными кошельков и транзакций.
+ * Сохраняет и загружает кошельки вместе с их транзакциями для каждого пользователя.
  */
 public class WalletRepository extends FileRepository {
     private static final String FILE_PATH_TEMPLATE = "wallets_%s.json"; // Шаблон пути к файлу для каждого пользователя
@@ -40,5 +43,34 @@ public class WalletRepository extends FileRepository {
             System.err.println("Ошибка при загрузке кошельков для пользователя " + userId + ": " + e.getMessage());
             return List.of(); // Возвращаем пустой список при ошибке
         }
+    }
+
+    /**
+     * Сохранить транзакции конкретного кошелька.
+     *
+     * @param wallet Кошелёк, транзакции которого нужно сохранить.
+     * @param userId ID пользователя.
+     */
+    public void saveTransactions(Wallet wallet, String userId) {
+        List<Wallet> wallets = loadWallets(userId);
+        wallets = wallets.stream()
+                .map(w -> w.getName().equals(wallet.getName()) ? wallet : w)
+                .collect(Collectors.toList());
+        saveWallets(wallets, userId);
+    }
+
+    /**
+     * Загрузить транзакции для конкретного кошелька.
+     *
+     * @param walletName Название кошелька.
+     * @param userId     ID пользователя.
+     * @return Список транзакций.
+     */
+    public List<Transaction> loadTransactions(String walletName, String userId) {
+        List<Wallet> wallets = loadWallets(userId);
+        return wallets.stream()
+                .filter(wallet -> wallet.getName().equals(walletName))
+                .flatMap(wallet -> wallet.getTransactions().stream())
+                .collect(Collectors.toList());
     }
 }

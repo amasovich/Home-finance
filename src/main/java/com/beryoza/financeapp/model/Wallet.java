@@ -104,6 +104,13 @@ public class Wallet {
         }
     }
 
+    public Transaction findTransactionById(String id) {
+        return transactions.stream()
+                .filter(transaction -> transaction.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
     /**
      * Вывести строковое представление кошелька: название, баланс и количество операций.
      *

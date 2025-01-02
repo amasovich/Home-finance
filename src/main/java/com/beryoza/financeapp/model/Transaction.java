@@ -1,32 +1,39 @@
 package com.beryoza.financeapp.model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Финансовая транзакция. Например, покупка продуктов или получение зарплаты.
  * Хранит информацию о сумме, категории и дате операции.
  */
 public class Transaction {
-    // Сумма транзакции (положительная для доходов, отрицательная для расходов)
-    private double amount;
-
-    // Категория транзакции, например, "Еда" или "Транспорт"
-    private Category category;
-
-    // Дата, когда была совершена транзакция
-    private LocalDate date;
+    private final String id; // Уникальный идентификатор
+    private double amount;   // Сумма транзакции
+    private Category category; // Категория транзакции
+    private LocalDate date;  // Дата транзакции
 
     /**
      * Конструктор. Создаём новую транзакцию с указанием суммы, категории и даты.
      *
      * @param amount    Сумма транзакции. Положительная для доходов, отрицательная для расходов.
-     * @param category  Категория транзакции (например, "Еда").
-     * @param date      Дата, когда была совершена транзакция.
+     * @param category  Категория транзакции.
+     * @param date      Дата транзакции.
      */
     public Transaction(double amount, Category category, LocalDate date) {
+        this.id = UUID.randomUUID().toString(); // Генерация уникального идентификатора
         this.amount = amount;
         this.category = category;
         this.date = date;
+    }
+
+    /**
+     * Получить уникальный идентификатор транзакции.
+     *
+     * @return Уникальный идентификатор транзакции.
+     */
+    public String getId() {
+        return id;
     }
 
     /**
@@ -40,7 +47,6 @@ public class Transaction {
 
     /**
      * Установить сумму транзакции.
-     * Используйте это, если нужно исправить значение.
      *
      * @param amount Новая сумма транзакции.
      */
@@ -58,7 +64,7 @@ public class Transaction {
     }
 
     /**
-     * Установить новую категорию для транзакции.
+     * Установить новую категорию транзакции.
      *
      * @param category Новая категория транзакции.
      */
@@ -69,7 +75,7 @@ public class Transaction {
     /**
      * Получить дату транзакции.
      *
-     * @return Дата, когда была совершена транзакция.
+     * @return Дата транзакции.
      */
     public LocalDate getDate() {
         return date;
@@ -77,7 +83,6 @@ public class Transaction {
 
     /**
      * Установить новую дату транзакции.
-     * Это может быть полезно, если транзакция была добавлена позже реальной даты.
      *
      * @param date Новая дата транзакции.
      */
@@ -86,14 +91,15 @@ public class Transaction {
     }
 
     /**
-     * Выводим информацию о транзакции: сумма, категория, дата.
+     * Вывод информации о транзакции: сумма, категория, дата.
      *
      * @return Строковое представление транзакции.
      */
     @Override
     public String toString() {
         return "Transaction{" +
-                "amount=" + amount +
+                "id='" + id + '\'' +
+                ", amount=" + amount +
                 ", category=" + category +
                 ", date=" + date +
                 '}';

@@ -1,28 +1,28 @@
 package com.beryoza.financeapp.service;
 
+import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.model.Wallet;
 import com.beryoza.financeapp.repository.WalletRepository;
 import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Сервис для управления кошельками.
- * Интегрирован с WalletRepository для работы с файлами.
+ * Сервис для управления кошельками и транзакциями.
+ * Интегрирует функционал добавления транзакций, подсчётов и управления кошельками.
  */
 public class WalletService {
-    private final UserService userService;
     private final WalletRepository walletRepository;
 
     /**
-     * Конструктор. Инициализируем репозиторий и сервис пользователей.
+     * Конструктор. Инициализирует репозиторий кошельков.
      *
-     * @param userService     Сервис для работы с пользователями.
-     * @param walletRepository Репозиторий для работы с кошельками.
+     * @param walletRepository Репозиторий для работы с данными кошельков и транзакций.
      */
-    public WalletService(UserService userService, WalletRepository walletRepository) {
-        this.userService = userService;
+    public WalletService(WalletRepository walletRepository) {
         this.walletRepository = walletRepository;
     }
 
@@ -48,13 +48,11 @@ public class WalletService {
 
         Wallet newWallet = new Wallet(walletName, initialBalance);
         wallets.add(newWallet);
-
-        // Сохраняем кошельки пользователя
-        walletRepository.saveWallets(wallets, user.getUsername()); // Передаём корректные параметры
+        walletRepository.saveWallets(wallets, user.getUsername());
     }
 
     /**
-     * Удалить кошелёк у пользователя.
+     * Удалить кошелёк пользователя.
      *
      * @param user       Пользователь, у которого удаляется кошелёк.
      * @param walletName Название кошелька, который нужно удалить.
@@ -67,11 +65,55 @@ public class WalletService {
         List<Wallet> wallets = user.getWallets();
         if (wallets.removeIf(wallet -> wallet.getName().equals(walletName))) {
             System.out.println("Кошелёк успешно удалён.");
-            // Сохраняем обновлённый список кошельков
-            walletRepository.saveWallets(wallets, user.getUsername()); // Передаём корректные параметры
+            walletRepository.saveWallets(wallets, user.getUsername());
         } else {
             System.out.println("Кошелёк с таким названием не найден.");
         }
+    }
+
+    /**
+     * Добавить транзакцию в кошелёк пользователя.
+     *
+     * @param user        Пользователь.
+     * @param wallet      Кошелёк, куда добавляется транзакция.
+     * @param transaction Транзакция для добавления.
+     */
+    public void addTransaction(User user, Wallet wallet, Transaction transaction) {
+        wallet.addTransaction(transaction);
+        walletRepository.saveTransactions(wallet, user.getUsername());
+    }
+
+    /**
+     * Удалить транзакцию из кошелька пользователя.
+     *
+     * @param user          Пользователь.
+     * @param wallet        Кошелёк, из которого удаляется транзакция.
+     * @param transactionId ID транзакции для удаления.
+     */
+    public void deleteTransaction(User user, Wallet wallet, String transactionId) {
+        List<Transaction> transactions = wallet.getTransactions();
+        boolean removed = transactions.removeIf(transaction -> transaction.getId().equals(transactionId));
+        if (removed) {
+            walletRepository.saveTransactions(wallet, user.getUsername());
+            System.out.println("Транзакция успешно удалена.");
+        } else {
+            System.out.println("Транзакция с указанным ID не найдена.");
+        }
+    }
+
+    /**
+     * Подсчитать доходы и расходы по категориям для пользователя.
+     *
+     * @param user Пользователь.
+     * @return Суммы доходов и расходов по категориям.
+     */
+    public Map<String, Double> calculateByCategories(User user) {
+        return user.getWallets().stream()
+                .flatMap(wallet -> wallet.getTransactions().stream())
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getCategory().getName(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
     }
 
     /**
@@ -82,5 +124,16 @@ public class WalletService {
      */
     public List<Wallet> getWallets(User user) {
         return user.getWallets();
+    }
+
+    /**
+     * Загрузить список транзакций для кошелька пользователя.
+     *
+     * @param user       Пользователь.
+     * @param walletName Название кошелька.
+     * @return Список транзакций.
+     */
+    public List<Transaction> loadTransactions(User user, String walletName) {
+        return walletRepository.loadTransactions(walletName, user.getUsername());
     }
 }
