@@ -2,24 +2,28 @@ package com.beryoza.financeapp.service;
 
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.model.Wallet;
+import com.beryoza.financeapp.repository.WalletRepository;
 import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.List;
 
 /**
  * Сервис для управления кошельками.
- * Добавлены проверки корректности вводимых данных.
+ * Интегрирован с WalletRepository для работы с файлами.
  */
 public class WalletService {
     private final UserService userService;
+    private final WalletRepository walletRepository;
 
     /**
-     * Конструктор. Получает ссылку на сервис пользователей.
+     * Конструктор. Инициализируем репозиторий и сервис пользователей.
      *
-     * @param userService Сервис для работы с пользователями.
+     * @param userService     Сервис для работы с пользователями.
+     * @param walletRepository Репозиторий для работы с кошельками.
      */
-    public WalletService(UserService userService) {
+    public WalletService(UserService userService, WalletRepository walletRepository) {
         this.userService = userService;
+        this.walletRepository = walletRepository;
     }
 
     /**
@@ -43,7 +47,10 @@ public class WalletService {
         }
 
         Wallet newWallet = new Wallet(walletName, initialBalance);
-        user.addWallet(newWallet);
+        wallets.add(newWallet);
+
+        // Сохраняем кошельки пользователя
+        walletRepository.saveWallets(wallets, user.getUsername()); // Передаём корректные параметры
     }
 
     /**
@@ -60,6 +67,8 @@ public class WalletService {
         List<Wallet> wallets = user.getWallets();
         if (wallets.removeIf(wallet -> wallet.getName().equals(walletName))) {
             System.out.println("Кошелёк успешно удалён.");
+            // Сохраняем обновлённый список кошельков
+            walletRepository.saveWallets(wallets, user.getUsername()); // Передаём корректные параметры
         } else {
             System.out.println("Кошелёк с таким названием не найден.");
         }
