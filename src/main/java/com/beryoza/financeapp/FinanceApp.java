@@ -1,10 +1,10 @@
-package com.beryoza.finance;
+package com.beryoza.financeapp;
 
 /**
  * Hello world!
  *
  */
-public class App 
+public class FinanceApp
 {
     public static void main( String[] args )
     {
