@@ -1,29 +1,36 @@
 package com.beryoza.financeapp.controller;
 
 import com.beryoza.financeapp.model.Category;
+import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.service.BudgetService;
+import com.beryoza.financeapp.service.WalletService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для управления категориями и бюджетами.
- * Позволяет добавлять категории, обновлять лимиты и просматривать их список.
+ * Добавлены подсчёты состояния бюджета и оставшихся лимитов.
  */
 public class BudgetController {
     private final BudgetService budgetService;
+    private final WalletService walletService;
     private final User user; // Текущий авторизованный пользователь
     private final Scanner scanner;
 
     /**
-     * Конструктор. Инициализирует сервис управления бюджетами и пользователя.
+     * Конструктор. Инициализирует сервисы и пользователя.
      *
      * @param budgetService Сервис для работы с категориями и бюджетами.
+     * @param walletService Сервис для работы с кошельками.
      * @param user          Авторизованный пользователь.
      */
-    public BudgetController(BudgetService budgetService, User user) {
+    public BudgetController(BudgetService budgetService, WalletService walletService, User user) {
         this.budgetService = budgetService;
+        this.walletService = walletService;
         this.user = user;
         this.scanner = new Scanner(System.in);
     }
@@ -37,14 +44,16 @@ public class BudgetController {
             System.out.println("1. Добавить категорию");
             System.out.println("2. Обновить лимит категории");
             System.out.println("3. Просмотреть список категорий");
-            System.out.println("4. Вернуться в главное меню");
+            System.out.println("4. Подсчитать состояние бюджета по категориям");
+            System.out.println("5. Вернуться в главное меню");
 
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1" -> addCategory();
                 case "2" -> updateBudgetLimit();
                 case "3" -> listCategories();
-                case "4" -> {
+                case "4" -> calculateBudgetState();
+                case "5" -> {
                     System.out.println("Возвращаемся в главное меню.");
                     return;
                 }
@@ -100,6 +109,27 @@ public class BudgetController {
         for (Category category : categories) {
             System.out.println("- " + category.getName() +
                     (category.getBudgetLimit() > 0 ? " (Лимит: " + category.getBudgetLimit() + ")" : ""));
+        }
+    }
+
+    /**
+     * Подсчитать состояние бюджета по категориям.
+     */
+    private void calculateBudgetState() {
+        Map<String, Double> expensesByCategory = walletService.getWallets(user).stream()
+                .flatMap(wallet -> wallet.getTransactions().stream())
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getCategory().getName(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+        System.out.println("Состояние бюджета по категориям:");
+        for (Category category : budgetService.getCategories(user)) {
+            double expenses = expensesByCategory.getOrDefault(category.getName(), 0.0);
+            double remainingBudget = category.getBudgetLimit() - Math.abs(expenses);
+            System.out.println("- " + category.getName() + ": Лимит: " + category.getBudgetLimit() +
+                    ", Расходы: " + Math.abs(expenses) +
+                    ", Оставшийся бюджет: " + remainingBudget);
         }
     }
 }
