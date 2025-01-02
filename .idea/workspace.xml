@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Updating the Budget Service, adding validation of the category name and budget limit using the DataValidator class">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Updating the Wallet Service, adding validation of the wallet name and initial balance using DataValidator">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,7 +231,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735814406385</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Updating the Wallet Service, adding validation of the wallet name and initial balance using DataValidator">
+      <option name="closed" value="true" />
+      <created>1735814591208</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1735814591208</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -255,6 +264,7 @@
     <MESSAGE value="Added data validation in the addTransaction method" />
     <MESSAGE value="Budget Controller revision&#10;Adding checks:The category name must be non-empty.The budget limit must be a number &gt;= 0." />
     <MESSAGE value="Updating the Budget Service, adding validation of the category name and budget limit using the DataValidator class" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updating the Budget Service, adding validation of the category name and budget limit using the DataValidator class" />
+    <MESSAGE value="Updating the Wallet Service, adding validation of the wallet name and initial balance using DataValidator" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updating the Wallet Service, adding validation of the wallet name and initial balance using DataValidator" />
   </component>
 </project>
