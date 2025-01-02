@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Update structure project">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Added withdrawal of the balance of all wallets and confirmation before deletion">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +55,11 @@
     "kotlin-language-version-configured": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.beryoza.financeapp.service" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -271,11 +277,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735820891804</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Added withdrawal of the balance of all wallets and confirmation before deletion">
+      <option name="closed" value="true" />
+      <created>1735824683533</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1735824683533</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Creating empty class files" />
     <MESSAGE value="Adding a prepared User class" />
     <MESSAGE value="Adding a prepared Wallet class" />
     <MESSAGE value="Adding a prepared Transaction class" />
@@ -300,6 +313,7 @@
     <MESSAGE value="Integration of UserService with UserRepository for working with files" />
     <MESSAGE value="Added a Wallet Repository to work with files and fix walletRepository.saveWallets calls in WalletService" />
     <MESSAGE value="Update structure project" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update structure project" />
+    <MESSAGE value="Added withdrawal of the balance of all wallets and confirmation before deletion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added withdrawal of the balance of all wallets and confirmation before deletion" />
   </component>
 </project>
