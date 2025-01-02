@@ -4,9 +4,9 @@ import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.model.Wallet;
 import com.beryoza.financeapp.service.WalletService;
+import com.beryoza.financeapp.util.DataValidator;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -67,27 +67,36 @@ public class TransactionController {
     private void addTransaction(boolean isIncome) {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        Wallet wallet = findWalletByName(walletName);
+        if (!DataValidator.isNonEmptyString(walletName)) {
+            System.out.println("Название кошелька не может быть пустым.");
+            return;
+        }
 
+        Wallet wallet = findWalletByName(walletName);
         if (wallet == null) {
             System.out.println("Кошелёк не найден.");
             return;
         }
 
         System.out.print("Введите сумму: ");
-        double amount;
-        try {
-            amount = Double.parseDouble(scanner.nextLine());
-            if (!isIncome) {
-                amount = -amount; // Отрицательная сумма для расходов
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Некорректный ввод суммы. Попробуйте снова.");
+        String amountInput = scanner.nextLine();
+        if (!DataValidator.isNumeric(amountInput)) {
+            System.out.println("Сумма должна быть числом.");
+            return;
+        }
+
+        double amount = Double.parseDouble(amountInput);
+        if ((isIncome && amount <= 0) || (!isIncome && amount >= 0)) {
+            System.out.println("Некорректная сумма для выбранного типа транзакции.");
             return;
         }
 
         System.out.print("Введите категорию: ");
         String categoryName = scanner.nextLine();
+        if (!DataValidator.isNonEmptyString(categoryName)) {
+            System.out.println("Категория не может быть пустой.");
+            return;
+        }
 
         Transaction transaction = new Transaction(amount,
                 new com.beryoza.financeapp.model.Category(categoryName, 0), LocalDate.now());
