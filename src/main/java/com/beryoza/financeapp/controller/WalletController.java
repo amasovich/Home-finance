@@ -4,8 +4,8 @@ import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.model.Wallet;
 import com.beryoza.financeapp.service.WalletService;
+import com.beryoza.financeapp.util.DataValidator;
 
-import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -64,15 +64,19 @@ public class WalletController {
     private void addWallet() {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        System.out.print("Введите начальный баланс: ");
-        double initialBalance;
-        try {
-            initialBalance = Double.parseDouble(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Некорректный ввод баланса. Попробуйте снова.");
+        if (!DataValidator.isNonEmptyString(walletName)) {
+            System.out.println("Название кошелька не может быть пустым.");
             return;
         }
 
+        System.out.print("Введите начальный баланс: ");
+        String balanceInput = scanner.nextLine();
+        if (!DataValidator.isPositiveNumber(balanceInput)) {
+            System.out.println("Баланс должен быть положительным числом.");
+            return;
+        }
+
+        double initialBalance = Double.parseDouble(balanceInput);
         walletService.addWallet(user, walletName, initialBalance);
         System.out.println("Кошелёк успешно добавлен.");
     }

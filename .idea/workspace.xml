@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Adding a prepared DataValidator">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/UserController.java" afterDir="false" />
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format.">
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -191,7 +190,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735812865429</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format.">
+      <option name="closed" value="true" />
+      <created>1735813173484</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1735813173484</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -211,6 +218,7 @@
     <MESSAGE value="Update class TransactionController / Add calculateByCategories &amp; findWalletByName methods" />
     <MESSAGE value="Update class BudgetController / Add calculateBudgetState method" />
     <MESSAGE value="Adding a prepared DataValidator" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding a prepared DataValidator" />
+    <MESSAGE value="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format." />
   </component>
 </project>
