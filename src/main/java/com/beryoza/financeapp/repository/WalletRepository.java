@@ -3,6 +3,7 @@ package com.beryoza.financeapp.repository;
 import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.Wallet;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,27 @@ import java.util.stream.Collectors;
  * Сохраняет и загружает кошельки вместе с их транзакциями для каждого пользователя.
  */
 public class WalletRepository extends FileRepository {
-    private static final String FILE_PATH_TEMPLATE = "wallets_%s.json"; // Шаблон пути к файлу для каждого пользователя
+    // Шаблон пути к файлу для каждого пользователя
+    private static final String FILE_PATH_TEMPLATE = "data/wallets/wallets_%s.json";
+
+    /**
+     * Конструктор. При создании экземпляра репозитория проверяет
+     * наличие необходимой директории и создаёт её, если она отсутствует.
+     */
+    public WalletRepository() {
+        ensureDirectoriesExist();
+    }
+
+    /**
+     * Проверить наличие директории для хранения данных пользователей
+     * и создать её, если она отсутствует.
+     */
+    private void ensureDirectoriesExist() {
+        File directory = new File("data/wallets");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
 
     /**
      * Сохранить список кошельков пользователя в файл.

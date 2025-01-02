@@ -4,13 +4,34 @@ import com.beryoza.financeapp.model.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.io.File;
 
 /**
  * Репозиторий для работы с данными пользователей.
  * Сохраняет и загружает данные пользователей из файла.
  */
 public class UserRepository extends FileRepository {
-    private static final String FILE_PATH = "users.json"; // Путь к файлу с пользователями
+    // Путь к файлу с пользователями
+    private static final String FILE_PATH = "data/users/users.json";
+
+    /**
+     * Конструктор. При создании экземпляра репозитория проверяет
+     * наличие необходимой директории и создаёт её, если она отсутствует.
+     */
+    public UserRepository() {
+        ensureDirectoriesExist();
+    }
+
+    /**
+     * Проверить наличие директории для хранения данных пользователей
+     * и создать её, если она отсутствует.
+     */
+    private void ensureDirectoriesExist() {
+        File directory = new File("data/users");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
 
     /**
      * Сохранить список пользователей в файл.
