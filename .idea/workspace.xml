@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Revision of the Wallet Controller&#10;Adding checks:The wallet name cannot be empty.The balance must be a number and &gt;= 0">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Budget Controller revision&#10;Adding checks:The category name must be non-empty.The budget limit must be a number &gt;= 0.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/TransactionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,7 +207,23 @@
       <option name="project" value="LOCAL" />
       <updated>1735813472781</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Added data validation in the addTransaction method">
+      <option name="closed" value="true" />
+      <created>1735813931531</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1735813931531</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Budget Controller revision&#10;Adding checks:The category name must be non-empty.The budget limit must be a number &gt;= 0.">
+      <option name="closed" value="true" />
+      <created>1735814043289</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1735814043289</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -229,6 +245,8 @@
     <MESSAGE value="Adding a prepared DataValidator" />
     <MESSAGE value="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format." />
     <MESSAGE value="Revision of the Wallet Controller&#10;Adding checks:The wallet name cannot be empty.The balance must be a number and &gt;= 0" />
-    <option name="LAST_COMMIT_MESSAGE" value="Revision of the Wallet Controller&#10;Adding checks:The wallet name cannot be empty.The balance must be a number and &gt;= 0" />
+    <MESSAGE value="Added data validation in the addTransaction method" />
+    <MESSAGE value="Budget Controller revision&#10;Adding checks:The category name must be non-empty.The budget limit must be a number &gt;= 0." />
+    <option name="LAST_COMMIT_MESSAGE" value="Budget Controller revision&#10;Adding checks:The category name must be non-empty.The budget limit must be a number &gt;= 0." />
   </component>
 </project>
