@@ -2,30 +2,23 @@ package com.beryoza.financeapp.controller;
 
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.service.UserService;
+import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.Scanner;
 
 /**
  * Контроллер для управления пользователями.
- * Обрабатывает команды для регистрации и авторизации.
+ * Добавлены проверки вводимых данных.
  */
 public class UserController {
     private final UserService userService;
     private final Scanner scanner;
 
-    /**
-     * Конструктор. Инициализирует сервис пользователей и ввод через консоль.
-     *
-     * @param userService Сервис для управления пользователями.
-     */
     public UserController(UserService userService) {
         this.userService = userService;
         this.scanner = new Scanner(System.in);
     }
 
-    /**
-     * Запускает интерфейс для работы с пользователями.
-     */
     public void start() {
         System.out.println("Добро пожаловать! Выберите действие:");
         while (true) {
@@ -46,32 +39,44 @@ public class UserController {
         }
     }
 
-    /**
-     * Регистрация нового пользователя.
-     */
     private void register() {
         System.out.print("Введите логин: ");
         String username = scanner.nextLine();
+        if (!DataValidator.isValidLogin(username)) {
+            System.out.println("Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
+            return;
+        }
+
         System.out.print("Введите пароль: ");
         String password = scanner.nextLine();
+        if (!DataValidator.isValidPassword(password)) {
+            System.out.println("Пароль должен быть минимум 6 символов.");
+            return;
+        }
 
         userService.registerUser(username, password);
         System.out.println("Пользователь успешно зарегистрирован.");
     }
 
-    /**
-     * Авторизация пользователя.
-     */
     private void login() {
         System.out.print("Введите логин: ");
         String username = scanner.nextLine();
+        if (!DataValidator.isNonEmptyString(username)) {
+            System.out.println("Логин не может быть пустым.");
+            return;
+        }
+
         System.out.print("Введите пароль: ");
         String password = scanner.nextLine();
+        if (!DataValidator.isNonEmptyString(password)) {
+            System.out.println("Пароль не может быть пустым.");
+            return;
+        }
 
         User user = userService.authenticateUser(username, password);
         if (user != null) {
             System.out.println("Добро пожаловать, " + user.getUsername() + "!");
-            // Здесь можно добавить вызов других контроллеров, например, WalletController
+            // Вызов других контроллеров, если нужно
         } else {
             System.out.println("Неверный логин или пароль.");
         }
