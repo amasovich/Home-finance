@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class UserService {
     // Список всех зарегистрированных пользователей
-    private List<User> users;
+    private final List<User> users;
 
     // Поле для работы с репозиторием пользователей
     private final UserRepository userRepository;
@@ -163,7 +163,10 @@ public class UserService {
      * Получить список всех зарегистрированных пользователей.
      *
      * @return Список пользователей.
+     * @deprecated Этот метод в текущей версии не используется.
+     * Возможно, пригодится для администраторской панели или аналитики в будущем.
      */
+    @Deprecated
     public List<User> getAllUsers() {
         return users;
     }
