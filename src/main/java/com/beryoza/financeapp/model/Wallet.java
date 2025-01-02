@@ -109,11 +109,19 @@ public class Wallet {
         }
     }
 
+    /**
+     * Найти транзакцию по ID.
+     *
+     * @param id ID транзакции.
+     * @return Транзакция, если найдена; иначе null.
+     */
     public Transaction findTransactionById(String id) {
-        return transactions.stream()
-                .filter(transaction -> transaction.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        for (Transaction transaction : transactions) {
+            if (transaction.getId().equals(id)) {
+                return transaction;
+            }
+        }
+        return null; // Если транзакция с указанным ID не найдена
     }
 
     /**

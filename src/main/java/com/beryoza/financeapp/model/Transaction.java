@@ -51,7 +51,6 @@ public class Transaction {
      *
      * @param amount Новая сумма транзакции.
      */
-    @Deprecated
     public void setAmount(double amount) {
         this.amount = amount;
     }
@@ -71,7 +70,6 @@ public class Transaction {
      *
      * @param category Новая категория транзакции.
      */
-    @Deprecated
     public void setCategory(Category category) {
         this.category = category;
     }
@@ -91,7 +89,6 @@ public class Transaction {
      *
      * @param date Новая дата транзакции.
      */
-    @Deprecated
     public void setDate(LocalDate date) {
         this.date = date;
     }

@@ -4,11 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Update User">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Update model classes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/TransactionController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Transaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Wallet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Wallet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/util/DataValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/util/DataValidator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -345,11 +350,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735838237952</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Update model classes">
+      <option name="closed" value="true" />
+      <created>1735838746110</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1735838746110</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adding a prepared class WalletService" />
     <MESSAGE value="Adding a prepared class TransactionController" />
     <MESSAGE value="Adding a prepared class BudgetController" />
     <MESSAGE value="Update class WalletController / Add calculateFinances &amp; displayBudgetData methods" />
@@ -374,6 +386,7 @@
     <MESSAGE value="Update listTransactions method ih WalletService class" />
     <MESSAGE value="Update UserService" />
     <MESSAGE value="Update User" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update User" />
+    <MESSAGE value="Update model classes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update model classes" />
   </component>
 </project>

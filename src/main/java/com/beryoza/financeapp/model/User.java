@@ -105,6 +105,21 @@ public class User {
     }
 
     /**
+     * Найти кошелёк по названию.
+     *
+     * @param walletName Название кошелька.
+     * @return Кошелёк, если найден; иначе null.
+     */
+    public Wallet findWalletByName(String walletName) {
+        for (Wallet wallet : wallets) {
+            if (wallet.getName().equals(walletName)) {
+                return wallet;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Получить строковое представление объекта User.
      *
      * @return Информация о пользователе в текстовом формате.

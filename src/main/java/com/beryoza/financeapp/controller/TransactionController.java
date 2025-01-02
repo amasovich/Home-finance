@@ -36,8 +36,9 @@ public class TransactionController {
             System.out.println("2. Добавить расход");
             System.out.println("3. Просмотреть транзакции");
             System.out.println("4. Удалить транзакцию");
-            System.out.println("5. Подсчитать по категориям");
-            System.out.println("6. Вернуться в главное меню");
+            System.out.println("5. Редактировать транзакцию");
+            System.out.println("6. Подсчитать по категориям");
+            System.out.println("7. Вернуться в главное меню");
 
             String choice = scanner.nextLine();
             switch (choice) {
@@ -45,8 +46,9 @@ public class TransactionController {
                 case "2" -> addTransaction(false);
                 case "3" -> listTransactions();
                 case "4" -> deleteTransaction();
-                case "5" -> calculateByCategories();
-                case "6" -> {
+                case "5" -> editTransaction();
+                case "6" -> calculateByCategories();
+                case "7" -> {
                     System.out.println("Возвращаемся в главное меню.");
                     return;
                 }
@@ -89,7 +91,26 @@ public class TransactionController {
     private void listTransactions() {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
+
         walletService.listTransactions(user, walletName);
+    }
+
+    /**
+     * Метод для редактирования транзакции.
+     */
+    public void editTransaction() {
+        System.out.print("Введите название кошелька: ");
+        String walletName = scanner.nextLine();
+        System.out.print("Введите ID транзакции для редактирования: ");
+        String transactionId = scanner.nextLine();
+        System.out.print("Введите новую сумму транзакции: ");
+        String newAmountStr = scanner.nextLine();
+        System.out.print("Введите новую категорию: ");
+        String newCategory = scanner.nextLine();
+        System.out.print("Введите новую дату транзакции (yyyy-MM-dd): ");
+        String newDateStr = scanner.nextLine();
+
+        walletService.editTransaction(user, walletName, transactionId, newAmountStr, newCategory, newDateStr);
     }
 
     /**

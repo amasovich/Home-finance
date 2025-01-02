@@ -4,6 +4,7 @@ import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.util.DataValidator;
 import com.beryoza.financeapp.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,29 +36,46 @@ public class UserService {
      * @param password Пароль нового пользователя.
      */
     public void registerUser(String username, String password) {
-        if (!DataValidator.isNonEmptyString(username)) {
-            System.out.println("Логин не может быть пустым.");
-            return;
-        }
-        if (!DataValidator.isValidLogin(username)) {
-            System.out.println("Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
-            return;
-        }
-        if (users.stream().anyMatch(user -> user.getUsername().equals(username))) {
-            System.out.println("Пользователь с таким логином уже существует.");
-            return;
-        }
-        if (!DataValidator.isValidPassword(password)) {
-            System.out.println("Пароль должен быть минимум 6 символов.");
-            return;
-        }
-
-        User newUser = new User(username, password);
-        users.add(newUser);
-
         try {
-            userRepository.saveUsers(users); // Сохраняем данные в файл
+            // Проверка, что логин не пустой
+            if (!DataValidator.isNonEmptyString(username)) {
+                throw new IllegalArgumentException("Логин не может быть пустым.");
+            }
+
+            // Проверка длины логина
+            if (!DataValidator.isStringLengthValid(username, 20)) {
+                throw new IllegalArgumentException("Логин не может быть длиннее 20 символов.");
+            }
+
+            // Проверка формата логина
+            if (!DataValidator.isValidLogin(username)) {
+                throw new IllegalArgumentException("Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
+            }
+
+            // Проверка уникальности логина
+            List<String> existingUsernames = new ArrayList<>();
+            for (User user : users) {
+                existingUsernames.add(user.getUsername());
+            }
+
+            if (!DataValidator.isUniqueName(username, existingUsernames)) {
+                throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
+            }
+
+            // Проверка пароля
+            if (!DataValidator.isValidPassword(password)) {
+                throw new IllegalArgumentException("Пароль должен быть минимум 6 символов.");
+            }
+
+            // Создание нового пользователя
+            User newUser = new User(username, password);
+            users.add(newUser);
+
+            // Сохранение пользователя
+            userRepository.saveUsers(users);
             System.out.println("Пользователь успешно зарегистрирован.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Ошибка при сохранении пользователя: " + e.getMessage());
         }
@@ -70,24 +88,40 @@ public class UserService {
      * @param password Пароль пользователя.
      */
     public void authenticateUser(String username, String password) {
-        if (!DataValidator.isNonEmptyString(username)) {
-            System.out.println("Ошибка: Логин не может быть пустым.");
-            return;
-        }
-        if (!DataValidator.isNonEmptyString(password)) {
-            System.out.println("Ошибка: Пароль не может быть пустым.");
-            return;
-        }
+        try {
+            // Проверка, что логин не пустой
+            if (!DataValidator.isNonEmptyString(username)) {
+                throw new IllegalArgumentException("Логин не может быть пустым.");
+            }
 
-        User user = users.stream()
-                .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
-                .findFirst()
-                .orElse(null);
+            // Проверка длины логина
+            if (!DataValidator.isStringLengthValid(username, 20)) {
+                throw new IllegalArgumentException("Логин не может быть длиннее 20 символов.");
+            }
 
-        if (user != null) {
-            System.out.println("Добро пожаловать, " + user.getUsername() + "!");
-        } else {
-            System.out.println("Ошибка: Неверный логин или пароль.");
+            // Проверка, что пароль не пустой
+            if (!DataValidator.isNonEmptyString(password)) {
+                throw new IllegalArgumentException("Пароль не может быть пустым.");
+            }
+
+            // Поиск пользователя по логину и паролю
+            User user = null;
+            for (User u : users) {
+                if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
+                    user = u;
+                    break;
+                }
+            }
+
+            if (user != null) {
+                System.out.println("Добро пожаловать, " + user.getUsername() + "!");
+            } else {
+                System.out.println("Ошибка: Неверный логин или пароль.");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Ошибка при авторизации: " + e.getMessage());
         }
     }
 
@@ -98,28 +132,42 @@ public class UserService {
      * @param newPassword Новый пароль.
      */
     public void changePassword(String oldPassword, String newPassword) {
-        if (!DataValidator.isValidPassword(newPassword)) {
-            System.out.println("Ошибка: Пароль должен быть минимум 6 символов.");
-            return;
-        }
-
-        boolean isUpdated = false;
-        for (User user : users) {
-            if (user.getPassword().equals(oldPassword)) {
-                user.setPassword(newPassword);
-                isUpdated = true;
+        try {
+            // Проверка, что старый пароль не пустой
+            if (!DataValidator.isNonEmptyString(oldPassword)) {
+                throw new IllegalArgumentException("Старый пароль не может быть пустым.");
             }
-        }
 
-        if (isUpdated) {
-            try {
-                userRepository.saveUsers(users);
+            // Проверка, что новый пароль не пустой
+            if (!DataValidator.isNonEmptyString(newPassword)) {
+                throw new IllegalArgumentException("Новый пароль не может быть пустым.");
+            }
+
+            // Проверка длины нового пароля
+            if (!DataValidator.isValidPassword(newPassword)) {
+                throw new IllegalArgumentException("Пароль должен быть минимум 6 символов.");
+            }
+
+            // Обновление пароля
+            boolean isUpdated = false;
+            for (User user : users) {
+                if (user.getPassword().equals(oldPassword)) {
+                    user.setPassword(newPassword);
+                    isUpdated = true;
+                }
+            }
+
+            // Проверка результата обновления
+            if (isUpdated) {
+                userRepository.saveUsers(users); // Сохраняем изменения
                 System.out.println("Пароль успешно изменён.");
-            } catch (Exception e) {
-                System.out.println("Ошибка при сохранении данных: " + e.getMessage());
+            } else {
+                throw new IllegalArgumentException("Неверный старый пароль.");
             }
-        } else {
-            System.out.println("Ошибка: Неверный старый пароль.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Ошибка при сохранении данных: " + e.getMessage());
         }
     }
 
@@ -130,32 +178,57 @@ public class UserService {
      * @param newUsername Новый логин.
      */
     public void changeUsername(String oldUsername, String newUsername) {
-        if (users.stream().anyMatch(user -> user.getUsername().equals(newUsername))) {
-            System.out.println("Ошибка: Пользователь с таким логином уже существует.");
-            return;
-        }
-        if (!DataValidator.isValidLogin(newUsername)) {
-            System.out.println("Ошибка: Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
-            return;
-        }
-
-        boolean isUpdated = false;
-        for (User user : users) {
-            if (user.getUsername().equals(oldUsername)) {
-                user.setUsername(newUsername);
-                isUpdated = true;
+        try {
+            // Проверка, что старый логин не пустой
+            if (!DataValidator.isNonEmptyString(oldUsername)) {
+                throw new IllegalArgumentException("Старый логин не может быть пустым.");
             }
-        }
 
-        if (isUpdated) {
-            try {
-                userRepository.saveUsers(users);
+            // Проверка, что новый логин не пустой
+            if (!DataValidator.isNonEmptyString(newUsername)) {
+                throw new IllegalArgumentException("Новый логин не может быть пустым.");
+            }
+
+            // Проверка длины нового логина
+            if (!DataValidator.isStringLengthValid(newUsername, 20)) {
+                throw new IllegalArgumentException("Логин не может быть длиннее 20 символов.");
+            }
+
+            // Проверка формата нового логина
+            if (!DataValidator.isValidLogin(newUsername)) {
+                throw new IllegalArgumentException("Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
+            }
+
+            // Проверка уникальности нового логина
+            List<String> existingUsernames = new ArrayList<>();
+            for (User user : users) {
+                existingUsernames.add(user.getUsername());
+            }
+
+            if (!DataValidator.isUniqueName(newUsername, existingUsernames)) {
+                throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
+            }
+
+            // Обновление логина
+            boolean isUpdated = false;
+            for (User user : users) {
+                if (user.getUsername().equals(oldUsername)) {
+                    user.setUsername(newUsername);
+                    isUpdated = true;
+                }
+            }
+
+            // Проверка результата обновления
+            if (isUpdated) {
+                userRepository.saveUsers(users); // Сохранение изменений
                 System.out.println("Логин успешно изменён.");
-            } catch (Exception e) {
-                System.out.println("Ошибка при сохранении данных: " + e.getMessage());
+            } else {
+                throw new IllegalArgumentException("Старый логин не найден.");
             }
-        } else {
-            System.out.println("Ошибка: Старый логин не найден.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Ошибка при сохранении данных: " + e.getMessage());
         }
     }
 

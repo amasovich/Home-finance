@@ -30,6 +30,7 @@ public class DataValidator {
 
     /**
      * Проверяет, является ли строка допустимым положительным числом.
+     * Используйте !isPositiveNumber(input), если требуется проверить, что число не является положительным.
      *
      * @param input Строка для проверки.
      * @return true, если строка является положительным числом; иначе false.
@@ -55,7 +56,7 @@ public class DataValidator {
      * @return true, если строка является допустимой категорией; иначе false.
      */
     public static boolean isValidCategory(String category) {
-        return isNonEmptyString(category); // Можно расширить в будущем
+        return isNonEmptyString(category) && category.matches("^[a-zA-Z0-9 ]+$");
     }
 
     /**
@@ -96,16 +97,6 @@ public class DataValidator {
      */
     public static boolean isUniqueName(String name, List<String> existingNames) {
         return !existingNames.contains(name);
-    }
-
-    /**
-     * Проверяет, является ли строка допустимой для расходов (отрицательное число).
-     *
-     * @param input Строка для проверки.
-     * @return true, если строка отрицательное число; иначе false.
-     */
-    public static boolean isNegativeNumber(String input) {
-        return isNumeric(input) && Double.parseDouble(input) < 0;
     }
 
     /**
