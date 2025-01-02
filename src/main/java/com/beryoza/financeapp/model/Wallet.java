@@ -39,9 +39,11 @@ public class Wallet {
 
     /**
      * Установить новое название кошелька.
+     * Резервный метод. Может быть полезен для редактирования названия.
      *
      * @param name Новое название кошелька.
      */
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
@@ -57,10 +59,11 @@ public class Wallet {
 
     /**
      * Установить новый баланс кошелька.
-     * Используйте этот метод для корректировок, если возникли ошибки в расчётах.
+     * Резервный метод. Может быть полезен для корректировок.
      *
      * @param balance Новый баланс кошелька.
      */
+    @Deprecated
     public void setBalance(double balance) {
         this.balance = balance;
     }
@@ -76,9 +79,11 @@ public class Wallet {
 
     /**
      * Установить новый список транзакций.
+     * Резервный метод. Может быть полезен для массового обновления транзакций.
      *
      * @param transactions Новый список транзакций.
      */
+    @Deprecated
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }

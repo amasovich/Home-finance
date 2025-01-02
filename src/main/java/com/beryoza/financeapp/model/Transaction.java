@@ -47,9 +47,11 @@ public class Transaction {
 
     /**
      * Установить сумму транзакции.
+     * Резервный метод. Может быть полезен для редактирования транзакции.
      *
      * @param amount Новая сумма транзакции.
      */
+    @Deprecated
     public void setAmount(double amount) {
         this.amount = amount;
     }
@@ -65,9 +67,11 @@ public class Transaction {
 
     /**
      * Установить новую категорию транзакции.
+     * Резервный метод. Может быть полезен для изменения категории.
      *
      * @param category Новая категория транзакции.
      */
+    @Deprecated
     public void setCategory(Category category) {
         this.category = category;
     }
@@ -83,9 +87,11 @@ public class Transaction {
 
     /**
      * Установить новую дату транзакции.
+     * Резервный метод. Может быть полезен для корректировки даты.
      *
      * @param date Новая дата транзакции.
      */
+    @Deprecated
     public void setDate(LocalDate date) {
         this.date = date;
     }

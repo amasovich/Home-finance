@@ -42,9 +42,11 @@ public class Category {
 
     /**
      * Задать новое название для категории.
+     * Этот метод может быть полезен для функциональности редактирования категорий.
      *
      * @param name Новое название категории.
      */
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
