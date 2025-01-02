@@ -5,6 +5,7 @@ import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.service.BudgetService;
 import com.beryoza.financeapp.service.WalletService;
+import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.List;
 import java.util.Map;
@@ -68,15 +69,19 @@ public class BudgetController {
     private void addCategory() {
         System.out.print("Введите название категории: ");
         String categoryName = scanner.nextLine();
-        System.out.print("Введите лимит бюджета (введите 0, если лимит не нужен): ");
-        double budgetLimit;
-        try {
-            budgetLimit = Double.parseDouble(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Некорректный ввод лимита. Попробуйте снова.");
+        if (!DataValidator.isNonEmptyString(categoryName)) {
+            System.out.println("Название категории не может быть пустым.");
             return;
         }
 
+        System.out.print("Введите лимит бюджета (введите 0, если лимит не нужен): ");
+        String limitInput = scanner.nextLine();
+        if (!DataValidator.isPositiveNumber(limitInput) && !limitInput.equals("0")) {
+            System.out.println("Лимит бюджета должен быть числом >= 0.");
+            return;
+        }
+
+        double budgetLimit = Double.parseDouble(limitInput);
         budgetService.addCategory(user, categoryName, budgetLimit);
         System.out.println("Категория успешно добавлена.");
     }
@@ -87,15 +92,19 @@ public class BudgetController {
     private void updateBudgetLimit() {
         System.out.print("Введите название категории: ");
         String categoryName = scanner.nextLine();
-        System.out.print("Введите новый лимит бюджета: ");
-        double newLimit;
-        try {
-            newLimit = Double.parseDouble(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Некорректный ввод лимита. Попробуйте снова.");
+        if (!DataValidator.isNonEmptyString(categoryName)) {
+            System.out.println("Название категории не может быть пустым.");
             return;
         }
 
+        System.out.print("Введите новый лимит бюджета: ");
+        String limitInput = scanner.nextLine();
+        if (!DataValidator.isPositiveNumber(limitInput) && !limitInput.equals("0")) {
+            System.out.println("Лимит бюджета должен быть числом >= 0.");
+            return;
+        }
+
+        double newLimit = Double.parseDouble(limitInput);
         budgetService.updateBudgetLimit(user, categoryName, newLimit);
         System.out.println("Лимит бюджета успешно обновлён.");
     }
