@@ -1,10 +1,10 @@
-package beryoza.financeapp.model;
+package com.beryoza.financeapp.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Кошелёк пользователя. Тут храним баланс и все операции (доходы/расходы).
+ * Кошелёк пользователя. Хранит информацию о названии, балансе и транзакциях.
  */
 public class Wallet {
     // Название кошелька, например, "Наличные" или "Карта Сбербанка"
@@ -18,6 +18,9 @@ public class Wallet {
 
     /**
      * Конструктор. Задаём название кошелька и начальный баланс.
+     *
+     * @param name    Название кошелька.
+     * @param balance Начальный баланс.
      */
     public Wallet(String name, double balance) {
         this.name = name;
@@ -25,39 +28,65 @@ public class Wallet {
         this.transactions = new ArrayList<>(); // Начинаем с пустого списка транзакций
     }
 
-    // Получить название кошелька
+    /**
+     * Получить название кошелька.
+     *
+     * @return Название кошелька.
+     */
     public String getName() {
         return name;
     }
 
-    // Переименовать кошелёк
+    /**
+     * Установить новое название кошелька.
+     *
+     * @param name Новое название кошелька.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
-    // Узнать текущий баланс
+    /**
+     * Получить текущий баланс кошелька.
+     *
+     * @return Баланс кошелька.
+     */
     public double getBalance() {
         return balance;
     }
 
-    // Обновить баланс (например, если исправили ошибку в расчётах)
+    /**
+     * Установить новый баланс кошелька.
+     * Используйте этот метод для корректировок, если возникли ошибки в расчётах.
+     *
+     * @param balance Новый баланс кошелька.
+     */
     public void setBalance(double balance) {
         this.balance = balance;
     }
 
-    // Получить все транзакции
+    /**
+     * Получить список всех транзакций по кошельку.
+     *
+     * @return Список транзакций.
+     */
     public List<Transaction> getTransactions() {
         return transactions;
     }
 
-    // Полностью заменить список транзакций
+    /**
+     * Установить новый список транзакций.
+     *
+     * @param transactions Новый список транзакций.
+     */
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
 
     /**
-     * Добавляем транзакцию в список.
-     * Заодно можно пересчитать баланс.
+     * Добавить транзакцию в список и обновить баланс кошелька.
+     *
+     * @param transaction Транзакция, которую нужно добавить.
      */
     public void addTransaction(Transaction transaction) {
         this.transactions.add(transaction);
@@ -65,7 +94,9 @@ public class Wallet {
     }
 
     /**
-     * Удаляем транзакцию. Если нужно, пересчитаем баланс.
+     * Удалить транзакцию из списка и скорректировать баланс кошелька.
+     *
+     * @param transaction Транзакция, которую нужно удалить.
      */
     public void removeTransaction(Transaction transaction) {
         if (this.transactions.remove(transaction)) {
@@ -74,8 +105,9 @@ public class Wallet {
     }
 
     /**
-     * Удобный способ вывести информацию о кошельке:
-     * название, баланс и количество операций.
+     * Вывести строковое представление кошелька: название, баланс и количество операций.
+     *
+     * @return Информация о кошельке в текстовом формате.
      */
     @Override
     public String toString() {

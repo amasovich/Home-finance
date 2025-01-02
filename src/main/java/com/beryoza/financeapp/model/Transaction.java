@@ -1,9 +1,10 @@
-package beryoza.financeapp.model;
+package com.beryoza.financeapp.model;
 
 import java.time.LocalDate;
 
 /**
  * Финансовая транзакция. Например, покупка продуктов или получение зарплаты.
+ * Хранит информацию о сумме, категории и дате операции.
  */
 public class Transaction {
     // Сумма транзакции (положительная для доходов, отрицательная для расходов)
@@ -17,6 +18,10 @@ public class Transaction {
 
     /**
      * Конструктор. Создаём новую транзакцию с указанием суммы, категории и даты.
+     *
+     * @param amount    Сумма транзакции. Положительная для доходов, отрицательная для расходов.
+     * @param category  Категория транзакции (например, "Еда").
+     * @param date      Дата, когда была совершена транзакция.
      */
     public Transaction(double amount, Category category, LocalDate date) {
         this.amount = amount;
@@ -24,38 +29,66 @@ public class Transaction {
         this.date = date;
     }
 
-    // Узнать сумму транзакции
+    /**
+     * Получить сумму транзакции.
+     *
+     * @return Сумма транзакции.
+     */
     public double getAmount() {
         return amount;
     }
 
-    // Изменить сумму транзакции (например, исправить ошибку)
+    /**
+     * Установить сумму транзакции.
+     * Используйте это, если нужно исправить значение.
+     *
+     * @param amount Новая сумма транзакции.
+     */
     public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    // Получить категорию
+    /**
+     * Получить категорию транзакции.
+     *
+     * @return Категория транзакции.
+     */
     public Category getCategory() {
         return category;
     }
 
-    // Установить новую категорию
+    /**
+     * Установить новую категорию для транзакции.
+     *
+     * @param category Новая категория транзакции.
+     */
     public void setCategory(Category category) {
         this.category = category;
     }
 
-    // Узнать дату транзакции
+    /**
+     * Получить дату транзакции.
+     *
+     * @return Дата, когда была совершена транзакция.
+     */
     public LocalDate getDate() {
         return date;
     }
 
-    // Установить другую дату (например, если транзакцию внесли позже)
+    /**
+     * Установить новую дату транзакции.
+     * Это может быть полезно, если транзакция была добавлена позже реальной даты.
+     *
+     * @param date Новая дата транзакции.
+     */
     public void setDate(LocalDate date) {
         this.date = date;
     }
 
     /**
-     * Выводим инфу о транзакции: сумма, категория, дата.
+     * Выводим информацию о транзакции: сумма, категория, дата.
+     *
+     * @return Строковое представление транзакции.
      */
     @Override
     public String toString() {
