@@ -88,6 +88,14 @@ public class WalletController {
         System.out.print("Введите название кошелька для удаления: ");
         String walletName = scanner.nextLine();
 
+        // Подтверждение перед удалением
+        System.out.print("Вы уверены, что хотите удалить кошелёк \"" + walletName + "\"? (да/нет): ");
+        String confirmation = scanner.nextLine();
+        if (!confirmation.equalsIgnoreCase("да")) {
+            System.out.println("Удаление отменено.");
+            return;
+        }
+
         walletService.removeWallet(user, walletName);
         System.out.println("Кошелёк успешно удалён.");
     }
