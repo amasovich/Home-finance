@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Refactor BudgetController, WalletController, WalletService, WalletRepository, TransactionController">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Automatically create data/users and data/wallets folders">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/WalletRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/WalletRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/util/ErrorHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -310,11 +308,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735835063092</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Automatically create data/users and data/wallets folders">
+      <option name="closed" value="true" />
+      <created>1735836287628</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1735836287628</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adding a prepared Transaction class / add docs" />
     <MESSAGE value="Adding a prepared classes in service package" />
     <MESSAGE value="Adding a prepared classes in repository package" />
     <MESSAGE value="Adding a prepared class UserController" />
@@ -339,6 +344,7 @@
     <MESSAGE value="Refactor UserService &amp; UserController" />
     <MESSAGE value="Refactor BudgetService &amp; BudgetController" />
     <MESSAGE value="Refactor BudgetController, WalletController, WalletService, WalletRepository, TransactionController" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor BudgetController, WalletController, WalletService, WalletRepository, TransactionController" />
+    <MESSAGE value="Automatically create data/users and data/wallets folders" />
+    <option name="LAST_COMMIT_MESSAGE" value="Automatically create data/users and data/wallets folders" />
   </component>
 </project>

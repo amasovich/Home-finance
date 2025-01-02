@@ -250,21 +250,23 @@ public class WalletService {
      * @param walletName Название кошелька.
      */
     public void listTransactions(User user, String walletName) {
-        Wallet wallet = user.getWallets().stream()
-                .filter(w -> w.getName().equals(walletName))
-                .findFirst()
-                .orElse(null);
+        // Проверяем, существует ли кошелёк с заданным именем
+        boolean walletExists = user.getWallets().stream()
+                .anyMatch(wallet -> wallet.getName().equals(walletName));
 
-        if (wallet == null) {
-            System.out.println("Ошибка: Кошелёк не найден.");
+        if (!walletExists) {
+            System.out.println("Ошибка: Кошелёк с названием \"" + walletName + "\" не найден.");
             return;
         }
 
-        if (wallet.getTransactions().isEmpty()) {
+        // Загружаем транзакции
+        List<Transaction> transactions = walletRepository.loadTransactions(walletName, user.getUsername());
+
+        if (transactions.isEmpty()) {
             System.out.println("Транзакции отсутствуют.");
         } else {
-            System.out.println("Транзакции для кошелька \"" + wallet.getName() + "\":");
-            wallet.getTransactions().forEach(transaction ->
+            System.out.println("Транзакции для кошелька \"" + walletName + "\":");
+            transactions.forEach(transaction ->
                     System.out.println("- " + transaction.getDate() + ": " + transaction.getAmount() +
                             " (" + transaction.getCategory().getName() + ")"));
         }
