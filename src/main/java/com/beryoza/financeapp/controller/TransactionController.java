@@ -7,11 +7,13 @@ import com.beryoza.financeapp.service.WalletService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер для управления транзакциями.
- * Позволяет добавлять доходы и расходы, а также просматривать список транзакций.
+ * Добавлены подсчёты по категориям и оповещения.
  */
 public class TransactionController {
     private final WalletService walletService;
@@ -39,14 +41,16 @@ public class TransactionController {
             System.out.println("1. Добавить доход");
             System.out.println("2. Добавить расход");
             System.out.println("3. Просмотреть список транзакций");
-            System.out.println("4. Вернуться в главное меню");
+            System.out.println("4. Подсчитать расходы и доходы по категориям");
+            System.out.println("5. Вернуться в главное меню");
 
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1" -> addTransaction(true);
                 case "2" -> addTransaction(false);
                 case "3" -> listTransactions();
-                case "4" -> {
+                case "4" -> calculateByCategories();
+                case "5" -> {
                     System.out.println("Возвращаемся в главное меню.");
                     return;
                 }
@@ -63,13 +67,9 @@ public class TransactionController {
     private void addTransaction(boolean isIncome) {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        List<Wallet> wallets = walletService.getWallets(user);
-        Wallet selectedWallet = wallets.stream()
-                .filter(wallet -> wallet.getName().equals(walletName))
-                .findFirst()
-                .orElse(null);
+        Wallet wallet = findWalletByName(walletName);
 
-        if (selectedWallet == null) {
+        if (wallet == null) {
             System.out.println("Кошелёк не найден.");
             return;
         }
@@ -89,8 +89,9 @@ public class TransactionController {
         System.out.print("Введите категорию: ");
         String categoryName = scanner.nextLine();
 
-        Transaction transaction = new Transaction(amount, new com.beryoza.financeapp.model.Category(categoryName, 0), LocalDate.now());
-        selectedWallet.addTransaction(transaction);
+        Transaction transaction = new Transaction(amount,
+                new com.beryoza.financeapp.model.Category(categoryName, 0), LocalDate.now());
+        wallet.addTransaction(transaction);
         System.out.println("Транзакция успешно добавлена.");
     }
 
@@ -100,21 +101,46 @@ public class TransactionController {
     private void listTransactions() {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        List<Wallet> wallets = walletService.getWallets(user);
-        Wallet selectedWallet = wallets.stream()
-                .filter(wallet -> wallet.getName().equals(walletName))
-                .findFirst()
-                .orElse(null);
+        Wallet wallet = findWalletByName(walletName);
 
-        if (selectedWallet == null) {
+        if (wallet == null) {
             System.out.println("Кошелёк не найден.");
             return;
         }
 
-        System.out.println("Транзакции для кошелька \"" + selectedWallet.getName() + "\":");
-        for (Transaction transaction : selectedWallet.getTransactions()) {
+        System.out.println("Транзакции для кошелька \"" + wallet.getName() + "\":");
+        for (Transaction transaction : wallet.getTransactions()) {
             System.out.println("- " + transaction.getDate() + ": " +
                     transaction.getAmount() + " (" + transaction.getCategory().getName() + ")");
         }
+    }
+
+    /**
+     * Подсчитать доходы и расходы по категориям.
+     */
+    private void calculateByCategories() {
+        Map<String, Double> categoryTotals = walletService.getWallets(user).stream()
+                .flatMap(wallet -> wallet.getTransactions().stream())
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getCategory().getName(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+        System.out.println("Доходы и расходы по категориям:");
+        categoryTotals.forEach((category, total) ->
+                System.out.println("- " + category + ": " + total));
+    }
+
+    /**
+     * Найти кошелёк по названию.
+     *
+     * @param walletName Название кошелька.
+     * @return Найденный кошелёк или null.
+     */
+    private Wallet findWalletByName(String walletName) {
+        return walletService.getWallets(user).stream()
+                .filter(wallet -> wallet.getName().equals(walletName))
+                .findFirst()
+                .orElse(null);
     }
 }
