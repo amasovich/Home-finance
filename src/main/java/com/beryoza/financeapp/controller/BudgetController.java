@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 /**
  * Контроллер для управления категориями и бюджетами.
- * Отвечает за ввод данных от пользователя и передачу их в сервис BudgetService.
  */
 public class BudgetController {
     private final BudgetService budgetService;
@@ -56,7 +55,6 @@ public class BudgetController {
 
     /**
      * Метод для добавления новой категории.
-     * Пользователь вводит название категории и лимит бюджета.
      */
     private void addCategory() {
         System.out.print("Введите название категории: ");
@@ -69,7 +67,6 @@ public class BudgetController {
 
     /**
      * Метод для обновления лимита бюджета категории.
-     * Пользователь вводит название категории и новый лимит.
      */
     private void updateBudgetLimit() {
         System.out.print("Введите название категории: ");

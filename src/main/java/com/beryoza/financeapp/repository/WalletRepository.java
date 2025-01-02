@@ -52,11 +52,15 @@ public class WalletRepository extends FileRepository {
      * @param userId ID пользователя.
      */
     public void saveTransactions(Wallet wallet, String userId) {
-        List<Wallet> wallets = loadWallets(userId);
-        wallets = wallets.stream()
-                .map(w -> w.getName().equals(wallet.getName()) ? wallet : w)
-                .collect(Collectors.toList());
-        saveWallets(wallets, userId);
+        try {
+            List<Wallet> wallets = loadWallets(userId);
+            wallets = wallets.stream()
+                    .map(w -> w.getName().equals(wallet.getName()) ? wallet : w)
+                    .collect(Collectors.toList());
+            saveWallets(wallets, userId);
+        } catch (Exception e) {
+            System.err.println("Ошибка при сохранении транзакций для кошелька \"" + wallet.getName() + "\": " + e.getMessage());
+        }
     }
 
     /**
@@ -67,10 +71,15 @@ public class WalletRepository extends FileRepository {
      * @return Список транзакций.
      */
     public List<Transaction> loadTransactions(String walletName, String userId) {
-        List<Wallet> wallets = loadWallets(userId);
-        return wallets.stream()
-                .filter(wallet -> wallet.getName().equals(walletName))
-                .flatMap(wallet -> wallet.getTransactions().stream())
-                .collect(Collectors.toList());
+        try {
+            List<Wallet> wallets = loadWallets(userId);
+            return wallets.stream()
+                    .filter(wallet -> wallet.getName().equals(walletName))
+                    .flatMap(wallet -> wallet.getTransactions().stream())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Ошибка при загрузке транзакций для кошелька \"" + walletName + "\": " + e.getMessage());
+            return List.of();
+        }
     }
 }

@@ -1,19 +1,12 @@
 package com.beryoza.financeapp.controller;
 
-import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
-import com.beryoza.financeapp.model.Wallet;
 import com.beryoza.financeapp.service.WalletService;
-import com.beryoza.financeapp.util.DataValidator;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
  * Контроллер для управления транзакциями.
- * Реализует команды добавления, удаления, просмотра и подсчёта транзакций.
  */
 public class TransactionController {
     private final WalletService walletService;
@@ -21,19 +14,20 @@ public class TransactionController {
     private final Scanner scanner;
 
     /**
-     * Конструктор. Инициализирует контроллер транзакций.
+     * Конструктор для инициализации TransactionController.
      *
      * @param walletService Сервис для работы с кошельками и транзакциями.
      * @param user          Авторизованный пользователь.
+     * @param scanner       Сканер для чтения пользовательского ввода.
      */
-    public TransactionController(WalletService walletService, User user) {
+    public TransactionController(WalletService walletService, User user, Scanner scanner) {
         this.walletService = walletService;
         this.user = user;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     /**
-     * Запускает интерфейс управления транзакциями.
+     * Запуск главного меню управления транзакциями.
      */
     public void start() {
         System.out.println("Управление транзакциями:");
@@ -62,103 +56,46 @@ public class TransactionController {
     }
 
     /**
-     * Добавить транзакцию (доход или расход).
+     * Метод для добавления транзакции (доход или расход).
      *
      * @param isIncome Если true, то это доход, иначе расход.
      */
     private void addTransaction(boolean isIncome) {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        Wallet wallet = walletService.getWallets(user).stream()
-                .filter(w -> w.getName().equals(walletName))
-                .findFirst()
-                .orElse(null);
-
-        if (wallet == null) {
-            System.out.println("Кошелёк не найден.");
-            return;
-        }
-
         System.out.print("Введите сумму: ");
         String amountInput = scanner.nextLine();
-        if (!DataValidator.isNumeric(amountInput)) {
-            System.out.println("Сумма должна быть числом.");
-            return;
-        }
-
-        double amount = Double.parseDouble(amountInput);
-        if (!isIncome) {
-            amount = -amount; // Расходы отрицательные
-        }
-
         System.out.print("Введите категорию: ");
         String categoryName = scanner.nextLine();
-        if (!DataValidator.isNonEmptyString(categoryName)) {
-            System.out.println("Категория не может быть пустой.");
-            return;
-        }
 
-        Transaction transaction = new Transaction(amount,
-                new com.beryoza.financeapp.model.Category(categoryName, 0), LocalDate.now());
-        walletService.addTransaction(user, wallet, transaction);
-        System.out.println("Транзакция успешно добавлена.");
+        walletService.addTransaction(user, walletName, amountInput, categoryName, isIncome);
     }
 
     /**
-     * Удалить транзакцию.
+     * Метод для удаления транзакции.
      */
     private void deleteTransaction() {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        Wallet wallet = walletService.getWallets(user).stream()
-                .filter(w -> w.getName().equals(walletName))
-                .findFirst()
-                .orElse(null);
-
-        if (wallet == null) {
-            System.out.println("Кошелёк не найден.");
-            return;
-        }
-
-        System.out.println("Список транзакций:");
-        List<Transaction> transactions = wallet.getTransactions();
-        transactions.forEach(transaction -> System.out.println(
-                "- ID: " + transaction.getId() + ", Сумма: " + transaction.getAmount() +
-                        ", Категория: " + transaction.getCategory().getName()));
-
         System.out.print("Введите ID транзакции для удаления: ");
         String transactionId = scanner.nextLine();
-        walletService.deleteTransaction(user, wallet, transactionId);
+
+        walletService.deleteTransaction(user, walletName, transactionId);
     }
 
     /**
-     * Просмотреть список транзакций.
+     * Метод для отображения списка транзакций.
      */
     private void listTransactions() {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        Wallet wallet = walletService.getWallets(user).stream()
-                .filter(w -> w.getName().equals(walletName))
-                .findFirst()
-                .orElse(null);
-
-        if (wallet == null) {
-            System.out.println("Кошелёк не найден.");
-            return;
-        }
-
-        System.out.println("Транзакции для кошелька \"" + wallet.getName() + "\":");
-        wallet.getTransactions().forEach(transaction -> System.out.println(
-                "- " + transaction.getDate() + ": " + transaction.getAmount() +
-                        " (" + transaction.getCategory().getName() + ")"));
+        walletService.listTransactions(user, walletName);
     }
 
     /**
-     * Подсчитать транзакции по категориям.
+     * Метод для подсчёта транзакций по категориям.
      */
     private void calculateByCategories() {
-        Map<String, Double> totals = walletService.calculateByCategories(user);
-        System.out.println("Доходы и расходы по категориям:");
-        totals.forEach((category, total) -> System.out.println("- " + category + ": " + total));
+        walletService.calculateByCategories(user);
     }
 }

@@ -1,16 +1,12 @@
 package com.beryoza.financeapp.controller;
 
-import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
-import com.beryoza.financeapp.model.Wallet;
 import com.beryoza.financeapp.service.WalletService;
-import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.Scanner;
 
 /**
  * Контроллер для управления кошельками пользователя.
- * Добавлены подсчёты доходов, расходов и оповещения.
  */
 public class WalletController {
     private final WalletService walletService;
@@ -18,19 +14,20 @@ public class WalletController {
     private final Scanner scanner;
 
     /**
-     * Конструктор. Инициализирует сервис кошельков и пользователя.
+     * Конструктор для инициализации WalletController.
      *
      * @param walletService Сервис для работы с кошельками.
      * @param user          Авторизованный пользователь.
+     * @param scanner       Сканер для чтения пользовательского ввода.
      */
-    public WalletController(WalletService walletService, User user) {
+    public WalletController(WalletService walletService, User user, Scanner scanner) {
         this.walletService = walletService;
         this.user = user;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scanner;
     }
 
     /**
-     * Запускает интерфейс для работы с кошельками.
+     * Запуск главного меню управления кошельками.
      */
     public void start() {
         System.out.println("Управление кошельками:");
@@ -59,89 +56,45 @@ public class WalletController {
     }
 
     /**
-     * Добавить новый кошелёк.
+     * Метод для добавления нового кошелька.
      */
     private void addWallet() {
         System.out.print("Введите название кошелька: ");
         String walletName = scanner.nextLine();
-        if (!DataValidator.isNonEmptyString(walletName)) {
-            System.out.println("Название кошелька не может быть пустым.");
-            return;
-        }
-
         System.out.print("Введите начальный баланс: ");
-        String balanceInput = scanner.nextLine();
-        if (!DataValidator.isPositiveNumber(balanceInput)) {
-            System.out.println("Баланс должен быть положительным числом.");
-            return;
-        }
+        double initialBalance = Double.parseDouble(scanner.nextLine());
 
-        double initialBalance = Double.parseDouble(balanceInput);
         walletService.addWallet(user, walletName, initialBalance);
-        System.out.println("Кошелёк успешно добавлен.");
     }
 
     /**
-     * Удалить существующий кошелёк.
+     * Метод для удаления кошелька.
      */
     private void removeWallet() {
         System.out.print("Введите название кошелька для удаления: ");
         String walletName = scanner.nextLine();
 
-        // Подтверждение перед удалением
-        System.out.print("Вы уверены, что хотите удалить кошелёк \"" + walletName + "\"? (да/нет): ");
-        String confirmation = scanner.nextLine();
-        if (!confirmation.equalsIgnoreCase("да")) {
-            System.out.println("Удаление отменено.");
-            return;
-        }
-
         walletService.removeWallet(user, walletName);
-        System.out.println("Кошелёк успешно удалён.");
     }
 
     /**
-     * Просмотреть список всех кошельков пользователя.
+     * Метод для отображения списка всех кошельков пользователя.
      */
     private void listWallets() {
-        System.out.println("Ваши кошельки:");
-        for (Wallet wallet : walletService.getWallets(user)) {
-            System.out.println("- " + wallet.getName() + " (Баланс: " + wallet.getBalance() + ")");
-        }
+        walletService.listWallets(user);
     }
 
     /**
-     * Подсчитать общий доход и расходы по всем кошелькам.
+     * Метод для подсчёта общего дохода и расходов по всем кошелькам.
      */
     private void calculateFinances() {
-        double totalIncome = 0;
-        double totalExpenses = 0;
-
-        for (Wallet wallet : walletService.getWallets(user)) {
-            for (Transaction transaction : wallet.getTransactions()) {
-                if (transaction.getAmount() > 0) {
-                    totalIncome += transaction.getAmount();
-                } else {
-                    totalExpenses += transaction.getAmount();
-                }
-            }
-        }
-
-        System.out.println("Общий доход: " + totalIncome);
-        System.out.println("Общие расходы: " + Math.abs(totalExpenses));
+        walletService.calculateFinances(user);
     }
 
     /**
-     * Вывести данные по бюджету для каждого кошелька.
+     * Метод для отображения данных по бюджету для каждого кошелька.
      */
     private void displayBudgetData() {
-        for (Wallet wallet : walletService.getWallets(user)) {
-            System.out.println("Кошелёк: " + wallet.getName());
-            for (Transaction transaction : wallet.getTransactions()) {
-                System.out.println("- Транзакция: " + transaction.getAmount() +
-                        " (" + transaction.getCategory().getName() + ")");
-            }
-            System.out.println("Текущий баланс: " + wallet.getBalance());
-        }
+        walletService.displayBudgetData(user);
     }
 }

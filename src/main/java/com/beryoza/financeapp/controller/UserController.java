@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 /**
  * Контроллер для управления пользователями.
- * Все проверки и бизнес-логика вынесены в UserService.
  */
 public class UserController {
     private final UserService userService; // Сервис для управления пользователями
@@ -51,7 +50,6 @@ public class UserController {
 
     /**
      * Метод для регистрации нового пользователя.
-     * Проверяет ввод логина и пароля.
      */
     private void register() {
         System.out.print("Введите логин: ");
@@ -64,7 +62,6 @@ public class UserController {
 
     /**
      * Метод для авторизации пользователя.
-     * Проверяет логин и пароль пользователя.
      */
     private void login() {
         System.out.print("Введите логин: ");
@@ -77,7 +74,6 @@ public class UserController {
 
     /**
      * Метод для изменения пароля пользователя.
-     * Проверяет старый пароль и устанавливает новый.
      */
     private void changePassword() {
         System.out.print("Введите старый пароль: ");
@@ -90,7 +86,6 @@ public class UserController {
 
     /**
      * Метод для изменения логина пользователя.
-     * Проверяет старый логин и устанавливает новый.
      */
     private void changeUsername() {
         System.out.print("Введите старый логин: ");
