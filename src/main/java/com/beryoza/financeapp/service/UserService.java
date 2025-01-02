@@ -2,27 +2,34 @@ package com.beryoza.financeapp.service;
 
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.util.DataValidator;
+import com.beryoza.financeapp.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Сервис для управления пользователями.
- * Добавлены проверки корректности вводимых данных.
+ * Интегрирован с UserRepository для работы с файлами.
  */
 public class UserService {
     // Список всех зарегистрированных пользователей
     private List<User> users;
 
+    // Поле для работы с репозиторием пользователей
+    private final UserRepository userRepository;
+
     /**
-     * Конструктор. Инициализируем пустой список пользователей.
+     * Конструктор. Инициализируем репозиторий и загружаем пользователей.
+     *
+     * @param userRepository Репозиторий для работы с данными пользователей.
      */
-    public UserService() {
-        this.users = new ArrayList<>();
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.users = userRepository.loadUsers(); // Загрузка данных из файла
     }
 
     /**
      * Регистрация нового пользователя.
+     * Данные автоматически сохраняются в файл.
      *
      * @param username Логин нового пользователя.
      * @param password Пароль нового пользователя.
@@ -43,6 +50,7 @@ public class UserService {
 
         User newUser = new User(username, password);
         users.add(newUser);
+        userRepository.saveUsers(users); // Сохраняем данные в файл
     }
 
     /**
