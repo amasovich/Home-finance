@@ -77,9 +77,11 @@ public class User {
 
     /**
      * Установить новый список кошельков.
+     * Резервный метод. Может понадобиться для операций импорта/экспорта или массового обновления.
      *
      * @param wallets Новый список кошельков.
      */
+    @Deprecated
     public void setWallets(List<Wallet> wallets) {
         this.wallets = wallets;
     }

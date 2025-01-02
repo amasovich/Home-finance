@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Update listTransactions method ih WalletService class">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Update UserService">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -327,11 +327,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735836990807</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Update UserService">
+      <option name="closed" value="true" />
+      <created>1735838047852</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1735838047852</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adding a prepared classes in repository package" />
     <MESSAGE value="Adding a prepared class UserController" />
     <MESSAGE value="Adding a prepared class WalletService" />
     <MESSAGE value="Adding a prepared class TransactionController" />
@@ -356,6 +363,7 @@
     <MESSAGE value="Refactor BudgetController, WalletController, WalletService, WalletRepository, TransactionController" />
     <MESSAGE value="Automatically create data/users and data/wallets folders" />
     <MESSAGE value="Update listTransactions method ih WalletService class" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update listTransactions method ih WalletService class" />
+    <MESSAGE value="Update UserService" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update UserService" />
   </component>
 </project>
