@@ -1,1 +1,21 @@
-[{"userId":"amas3","name":"magaz11","budgetLimit":200.0},{"userId":"amas3","name":"magaz2","budgetLimit":333.0},{"userId":"amas3","name":"магаз777","budgetLimit":2222.0},{"userId":"amas3","name":"sport","budgetLimit":1000.0}]
+[ {
+  "userId" : "amas3",
+  "name" : "magaz11",
+  "budgetLimit" : 200.0
+}, {
+  "userId" : "amas3",
+  "name" : "magaz2",
+  "budgetLimit" : 333.0
+}, {
+  "userId" : "amas3",
+  "name" : "магаз777",
+  "budgetLimit" : 2222.0
+}, {
+  "userId" : "amas3",
+  "name" : "sport",
+  "budgetLimit" : 1000.0
+}, {
+  "userId" : "amas345",
+  "name" : "spotmaster",
+  "budgetLimit" : 240.0
+} ]

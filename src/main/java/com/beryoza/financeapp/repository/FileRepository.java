@@ -1,6 +1,7 @@
 package com.beryoza.financeapp.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
@@ -18,6 +19,8 @@ public abstract class FileRepository {
     public FileRepository() {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule()); // Регистрация модуля для LocalDate
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT); // Включаем форматированный вывод
+
     }
 
     /**
