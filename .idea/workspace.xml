@@ -6,16 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="Refactoring all classes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/users/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/users/users.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/FinanceApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/FinanceApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/BudgetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/BudgetController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/model/Category.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/CategoryRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/util/DataValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/util/DataValidator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,20 +52,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.App.executor": "Run",
-    "Application.FinanceApp.executor": "Run",
-    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "edit__model",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.App.executor&quot;: &quot;Run&quot;,
+    &quot;Application.FinanceApp.executor&quot;: &quot;Run&quot;,
+    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;edit__model&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.beryoza.financeapp.service" />

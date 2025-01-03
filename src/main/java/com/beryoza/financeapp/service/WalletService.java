@@ -336,7 +336,11 @@ public class WalletService {
                 if (wallet.getName().equals(walletName)) {
                     System.out.println("Транзакции для кошелька \"" + walletName + "\":");
                     for (Transaction transaction : wallet.getTransactions()) {
-                        System.out.println("- " + transaction);
+                        System.out.printf("  - Дата: %s, Сумма: %.2f, Категория: %s, ID: %s\n",
+                                transaction.getDate(),
+                                transaction.getAmount(),
+                                transaction.getCategory().getName(),
+                                transaction.getId());
                     }
                     return;
                 }
