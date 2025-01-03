@@ -133,7 +133,7 @@ public class FinanceApp {
                                           WalletService walletService, BudgetService budgetService) {
         WalletController walletController = new WalletController(walletService, currentUser, scanner);
         BudgetController budgetController = new BudgetController(budgetService, currentUser, scanner);
-        TransactionController transactionController = new TransactionController(walletService, currentUser, scanner);
+        TransactionController transactionController = new TransactionController(walletService, budgetService, currentUser, scanner);
 
         while (true) {
             System.out.println("Меню пользователя:");

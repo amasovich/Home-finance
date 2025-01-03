@@ -180,4 +180,57 @@ public class BudgetService {
             throw new IllegalArgumentException("Некорректный лимит бюджета.");
         }
     }
+
+    /**
+     * Проверяет, превышен ли лимит бюджета для категорий пользователя.
+     *
+     * @param user Пользователь, для которого проверяются категории.
+     * @return Список предупреждений для категорий, где превышен лимит бюджета.
+     */
+    public List<String> checkBudgetLimits(User user) {
+        // Загружаем категории пользователя
+        List<Category> categories = categoryRepository.findCategoriesByUserId(user.getUsername());
+
+        // Подсчитываем расходы по категориям
+        Map<String, Double> expensesByCategory = calculateExpensesByCategory(user);
+
+        // Список предупреждений о превышении лимита
+        List<String> warnings = new ArrayList<>();
+        for (Category category : categories) {
+            // Получаем сумму расходов для категории
+            double expenses = Math.abs(expensesByCategory.getOrDefault(category.getName(), 0.0));
+            // Проверяем превышение лимита
+            if (expenses > category.getBudgetLimit()) {
+                warnings.add("Лимит превышен для категории: " + category.getName());
+            }
+        }
+        return warnings; // Возвращаем список предупреждений
+    }
+
+    /**
+     * Подсчитать расходы по категориям для пользователя.
+     *
+     * @param user Пользователь, для которого нужно подсчитать расходы.
+     * @return Карта с категориями и их расходами.
+     */
+    private Map<String, Double> calculateExpensesByCategory(User user) {
+        Map<String, Double> expensesByCategory = new HashMap<>();
+        List<Transaction> transactions = new ArrayList<>();
+
+        // Собираем все транзакции пользователя
+        for (Wallet wallet : walletRepository.loadWalletsByUser(user.getUsername())) {
+            transactions.addAll(wallet.getTransactions());
+        }
+
+        // Группируем расходы по категориям
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() < 0) { // Только расходы
+                String categoryName = transaction.getCategory().getName();
+                expensesByCategory.put(categoryName,
+                        expensesByCategory.getOrDefault(categoryName, 0.0) + transaction.getAmount());
+            }
+        }
+        return expensesByCategory;
+    }
+
 }

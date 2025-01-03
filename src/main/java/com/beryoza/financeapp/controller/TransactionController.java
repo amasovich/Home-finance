@@ -1,8 +1,10 @@
 package com.beryoza.financeapp.controller;
 
 import com.beryoza.financeapp.model.User;
+import com.beryoza.financeapp.service.BudgetService;
 import com.beryoza.financeapp.service.WalletService;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -10,6 +12,7 @@ import java.util.Scanner;
  */
 public class TransactionController {
     private final WalletService walletService;
+    private final BudgetService budgetService;
     private final User user;
     private final Scanner scanner;
 
@@ -17,11 +20,13 @@ public class TransactionController {
      * Конструктор для инициализации TransactionController.
      *
      * @param walletService Сервис для работы с кошельками и транзакциями.
+     * @param budgetService Сервис для работы с бюджетами.
      * @param user          Авторизованный пользователь.
      * @param scanner       Сканер для чтения пользовательского ввода.
      */
-    public TransactionController(WalletService walletService, User user, Scanner scanner) {
+    public TransactionController(WalletService walletService, BudgetService budgetService, User user, Scanner scanner) {
         this.walletService = walletService;
+        this.budgetService = budgetService; // Инициализация BudgetService
         this.user = user;
         this.scanner = scanner;
     }
@@ -74,6 +79,20 @@ public class TransactionController {
             String categoryName = scanner.nextLine();
 
             walletService.addTransaction(user, walletName, amount, categoryName, isIncome);
+
+            // Проверяем лимиты бюджета
+            List<String> warnings = budgetService.checkBudgetLimits(user);
+            if (!warnings.isEmpty()) {
+                System.out.println("Предупреждения:");
+                warnings.forEach(System.out::println);
+            }
+
+            // Проверяем превышение расходов над доходами
+            String expenseWarning = walletService.checkExpenseExceedsIncome(user);
+            if (!expenseWarning.isEmpty()) {
+                System.out.println(expenseWarning);
+            }
+
             System.out.println("Транзакция успешно добавлена.");
         } catch (NumberFormatException e) {
             System.out.println("Ошибка: Введите корректное число для суммы.");
@@ -130,6 +149,20 @@ public class TransactionController {
             String newDateStr = scanner.nextLine();
 
             walletService.editTransaction(user, walletName, transactionId, newAmount, newCategory, newDateStr);
+
+            // Проверяем лимиты бюджета после редактирования
+            List<String> warnings = budgetService.checkBudgetLimits(user);
+            if (!warnings.isEmpty()) {
+                System.out.println("Предупреждения:");
+                warnings.forEach(System.out::println);
+            }
+
+            // Проверяем превышение расходов над доходами
+            String expenseWarning = walletService.checkExpenseExceedsIncome(user);
+            if (!expenseWarning.isEmpty()) {
+                System.out.println(expenseWarning);
+            }
+
             System.out.println("Транзакция успешно отредактирована.");
         } catch (NumberFormatException e) {
             System.out.println("Ошибка: Введите корректное число для суммы.");

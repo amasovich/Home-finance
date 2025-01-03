@@ -230,6 +230,35 @@ public class WalletService {
     }
 
     /**
+     * Проверяет, превышают ли расходы пользователя доходы.
+     *
+     * @param user Пользователь, для которого выполняется проверка.
+     * @return Строка с предупреждением, если расходы превышают доходы; иначе пустая строка.
+     */
+    public String checkExpenseExceedsIncome(User user) {
+        double totalIncome = 0;
+        double totalExpenses = 0;
+
+        // Подсчитываем доходы и расходы по всем кошелькам
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
+            for (Transaction transaction : wallet.getTransactions()) {
+                if (transaction.getAmount() > 0) {
+                    totalIncome += transaction.getAmount();
+                } else {
+                    totalExpenses += transaction.getAmount();
+                }
+            }
+        }
+
+        // Проверяем, превышают ли расходы доходы
+        if (Math.abs(totalExpenses) > totalIncome) {
+            return "Предупреждение: Общие расходы превышают доходы!";
+        }
+        return ""; // Возвращаем пустую строку, если всё в порядке
+    }
+
+    /**
      * Добавить транзакцию в кошелёк.
      *
      * @param user         Пользователь.
