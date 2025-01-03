@@ -66,7 +66,6 @@ public class User {
      *
      * @return Информация о пользователе в текстовом формате.
      */
-    @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +

@@ -3,7 +3,6 @@ package com.beryoza.financeapp.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
 /**
  * Утилитарный класс для проверки вводимых данных.

@@ -87,7 +87,6 @@ public class Category {
      *
      * @return Строковое представление объекта категории.
      */
-    @Override
     public String toString() {
         return "Category{" +
                 "userId='" + userId + '\'' +

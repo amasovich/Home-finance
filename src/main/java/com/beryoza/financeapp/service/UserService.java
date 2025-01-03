@@ -207,33 +207,12 @@ public class UserService {
     }
 
     /**
-     * Сохраняет текущего пользователя в репозиторий.
-     */
-    private void saveCurrentUser() {
-        List<User> users = userRepository.loadUsers();
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUsername().equals(currentUser.getUsername())) {
-                users.set(i, currentUser);
-                break;
-            }
-        }
-        userRepository.saveUsers(users);
-    }
-
-    /**
      * Получить текущего авторизованного пользователя.
      *
      * @return Текущий пользователь или null, если пользователь не авторизован.
      */
     public User getCurrentUser() {
         return currentUser;
-    }
-
-    /**
-     * Выход из системы. Сбрасывает текущего пользователя.
-     */
-    public void logout() {
-        currentUser = null;
     }
 
     /**

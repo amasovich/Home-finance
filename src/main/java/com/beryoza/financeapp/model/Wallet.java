@@ -111,15 +111,6 @@ public class Wallet {
     }
 
     /**
-     * Установить новый список транзакций.
-     *
-     * @param transactions Новый список транзакций.
-     */
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
-    /**
      * Добавить транзакцию в кошелёк и обновить баланс.
      *
      * @param transaction Транзакция для добавления.
@@ -160,7 +151,6 @@ public class Wallet {
      *
      * @return Информация о кошельке в текстовом формате.
      */
-    @Override
     public String toString() {
         return "Wallet{" +
                 "userId='" + userId + '\'' +

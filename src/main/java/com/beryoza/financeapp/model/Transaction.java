@@ -115,7 +115,6 @@ public class Transaction {
      *
      * @return Строковое представление транзакции.
      */
-    @Override
     public String toString() {
         return "Transaction{" +
                 "id='" + id + '\'' +
