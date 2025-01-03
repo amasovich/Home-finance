@@ -1,8 +1,10 @@
 package com.beryoza.financeapp.controller;
 
 import com.beryoza.financeapp.model.User;
+import com.beryoza.financeapp.service.BudgetService;
 import com.beryoza.financeapp.service.WalletService;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -10,6 +12,7 @@ import java.util.Scanner;
  */
 public class TransactionController {
     private final WalletService walletService;
+    private final BudgetService budgetService;
     private final User user;
     private final Scanner scanner;
 
@@ -17,11 +20,13 @@ public class TransactionController {
      * Конструктор для инициализации TransactionController.
      *
      * @param walletService Сервис для работы с кошельками и транзакциями.
+     * @param budgetService Сервис для работы с бюджетами.
      * @param user          Авторизованный пользователь.
      * @param scanner       Сканер для чтения пользовательского ввода.
      */
-    public TransactionController(WalletService walletService, User user, Scanner scanner) {
+    public TransactionController(WalletService walletService, BudgetService budgetService, User user, Scanner scanner) {
         this.walletService = walletService;
+        this.budgetService = budgetService; // Инициализация BudgetService
         this.user = user;
         this.scanner = scanner;
     }
@@ -30,29 +35,31 @@ public class TransactionController {
      * Запуск главного меню управления транзакциями.
      */
     public void start() {
-        System.out.println("Управление транзакциями:");
+        System.out.println("Управление транзакциями. Выберите действие:");
         while (true) {
             System.out.println("1. Добавить доход");
             System.out.println("2. Добавить расход");
             System.out.println("3. Просмотреть транзакции");
             System.out.println("4. Удалить транзакцию");
             System.out.println("5. Редактировать транзакцию");
-            System.out.println("6. Подсчитать по категориям");
-            System.out.println("7. Вернуться в главное меню");
+            System.out.println("6. Вернуться в главное меню");
 
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1" -> addTransaction(true);
-                case "2" -> addTransaction(false);
-                case "3" -> listTransactions();
-                case "4" -> deleteTransaction();
-                case "5" -> editTransaction();
-                case "6" -> calculateByCategories();
-                case "7" -> {
-                    System.out.println("Возвращаемся в главное меню.");
-                    return;
+            try {
+                String choice = scanner.nextLine();
+                switch (choice) {
+                    case "1" -> addTransaction(true);
+                    case "2" -> addTransaction(false);
+                    case "3" -> listTransactions();
+                    case "4" -> deleteTransaction();
+                    case "5" -> editTransaction();
+                    case "6" -> {
+                        System.out.println("Выход в главное меню.");
+                        return;
+                    }
+                    default -> System.out.println("Неверный выбор. Попробуйте снова.");
                 }
-                default -> System.out.println("Неверный выбор. Попробуйте снова.");
+            } catch (Exception e) {
+                System.out.println("Ошибка: " + e.getMessage());
             }
         }
     }
@@ -63,60 +70,104 @@ public class TransactionController {
      * @param isIncome Если true, то это доход, иначе расход.
      */
     private void addTransaction(boolean isIncome) {
-        System.out.print("Введите название кошелька: ");
-        String walletName = scanner.nextLine();
-        System.out.print("Введите сумму: ");
-        String amountInput = scanner.nextLine();
-        System.out.print("Введите категорию: ");
-        String categoryName = scanner.nextLine();
+        try {
+            System.out.print("Введите название кошелька: ");
+            String walletName = scanner.nextLine();
+            System.out.print("Введите сумму: ");
+            double amount = Double.parseDouble(scanner.nextLine());
+            System.out.print("Введите категорию: ");
+            String categoryName = scanner.nextLine();
 
-        walletService.addTransaction(user, walletName, amountInput, categoryName, isIncome);
+            walletService.addTransaction(user, walletName, amount, categoryName, isIncome);
+
+            // Проверяем лимиты бюджета
+            List<String> warnings = budgetService.checkBudgetLimits(user);
+            if (!warnings.isEmpty()) {
+                System.out.println("Предупреждения:");
+                warnings.forEach(System.out::println);
+            }
+
+            // Проверяем превышение расходов над доходами
+            String expenseWarning = walletService.checkExpenseExceedsIncome(user);
+            if (!expenseWarning.isEmpty()) {
+                System.out.println(expenseWarning);
+            }
+
+            System.out.println("Транзакция успешно добавлена.");
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: Введите корректное число для суммы.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при добавлении транзакции: " + e.getMessage());
+        }
     }
 
     /**
      * Метод для удаления транзакции.
      */
     private void deleteTransaction() {
-        System.out.print("Введите название кошелька: ");
-        String walletName = scanner.nextLine();
-        System.out.print("Введите ID транзакции для удаления: ");
-        String transactionId = scanner.nextLine();
+        try {
+            System.out.print("Введите название кошелька: ");
+            String walletName = scanner.nextLine();
+            System.out.print("Введите ID транзакции для удаления: ");
+            String transactionId = scanner.nextLine();
 
-        walletService.deleteTransaction(user, walletName, transactionId);
+            walletService.deleteTransaction(user, walletName, transactionId);
+            System.out.println("Транзакция успешно удалена.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при удалении транзакции: " + e.getMessage());
+        }
     }
 
     /**
      * Метод для отображения списка транзакций.
      */
     private void listTransactions() {
-        System.out.print("Введите название кошелька: ");
-        String walletName = scanner.nextLine();
+        try {
+            System.out.print("Введите название кошелька: ");
+            String walletName = scanner.nextLine();
 
-        walletService.listTransactions(user, walletName);
+            walletService.listTransactions(user, walletName);
+        } catch (Exception e) {
+            System.out.println("Ошибка при отображении транзакций: " + e.getMessage());
+        }
     }
 
     /**
      * Метод для редактирования транзакции.
      */
-    public void editTransaction() {
-        System.out.print("Введите название кошелька: ");
-        String walletName = scanner.nextLine();
-        System.out.print("Введите ID транзакции для редактирования: ");
-        String transactionId = scanner.nextLine();
-        System.out.print("Введите новую сумму транзакции: ");
-        String newAmountStr = scanner.nextLine();
-        System.out.print("Введите новую категорию: ");
-        String newCategory = scanner.nextLine();
-        System.out.print("Введите новую дату транзакции (yyyy-MM-dd): ");
-        String newDateStr = scanner.nextLine();
+    private void editTransaction() {
+        try {
+            System.out.print("Введите название кошелька: ");
+            String walletName = scanner.nextLine();
+            System.out.print("Введите ID транзакции для редактирования: ");
+            String transactionId = scanner.nextLine();
+            System.out.print("Введите новую сумму транзакции: ");
+            double newAmount = Double.parseDouble(scanner.nextLine());
+            System.out.print("Введите новую категорию: ");
+            String newCategory = scanner.nextLine();
+            System.out.print("Введите новую дату транзакции (yyyy-MM-dd): ");
+            String newDateStr = scanner.nextLine();
 
-        walletService.editTransaction(user, walletName, transactionId, newAmountStr, newCategory, newDateStr);
-    }
+            walletService.editTransaction(user, walletName, transactionId, newAmount, newCategory, newDateStr);
 
-    /**
-     * Метод для подсчёта транзакций по категориям.
-     */
-    private void calculateByCategories() {
-        walletService.calculateByCategories(user);
+            // Проверяем лимиты бюджета после редактирования
+            List<String> warnings = budgetService.checkBudgetLimits(user);
+            if (!warnings.isEmpty()) {
+                System.out.println("Предупреждения:");
+                warnings.forEach(System.out::println);
+            }
+
+            // Проверяем превышение расходов над доходами
+            String expenseWarning = walletService.checkExpenseExceedsIncome(user);
+            if (!expenseWarning.isEmpty()) {
+                System.out.println(expenseWarning);
+            }
+
+            System.out.println("Транзакция успешно отредактирована.");
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: Введите корректное число для суммы.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при редактировании транзакции: " + e.getMessage());
+        }
     }
 }

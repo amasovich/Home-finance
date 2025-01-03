@@ -1,31 +1,36 @@
 package com.beryoza.financeapp.service;
 
+import com.beryoza.financeapp.model.Category;
 import com.beryoza.financeapp.model.User;
-import com.beryoza.financeapp.util.DataValidator;
+import com.beryoza.financeapp.model.Wallet;
+import com.beryoza.financeapp.repository.CategoryRepository;
 import com.beryoza.financeapp.repository.UserRepository;
+import com.beryoza.financeapp.repository.WalletRepository;
+import com.beryoza.financeapp.util.DataValidator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Сервис для управления пользователями.
- * Интегрирован с UserRepository для работы с файлами.
+ * Обеспечивает регистрацию, авторизацию, изменение данных и выход из системы.
  */
 public class UserService {
-    // Список всех зарегистрированных пользователей
-    private final List<User> users;
-
-    // Поле для работы с репозиторием пользователей
-    private final UserRepository userRepository;
+    private final UserRepository userRepository; // Репозиторий для работы с пользователями
+    private final WalletRepository walletRepository; // Репозиторий для работы с кошельками
+    private final CategoryRepository categoryRepository; // Репозиторий для работы с категориями
+    private User currentUser; // Текущий авторизованный пользователь
 
     /**
-     * Конструктор. Инициализируем репозиторий и загружаем пользователей.
+     * Конструктор.
      *
-     * @param userRepository Репозиторий для работы с данными пользователей.
+     * @param userRepository    Репозиторий для работы с пользователями.
+     * @param walletRepository  Репозиторий для работы с кошельками.
+     * @param categoryRepository Репозиторий для работы с категориями.
      */
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, WalletRepository walletRepository, CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
-        this.users = userRepository.loadUsers(); // Загрузка данных из файла
+        this.walletRepository = walletRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -37,48 +42,33 @@ public class UserService {
      */
     public void registerUser(String username, String password) {
         try {
-            // Проверка, что логин не пустой
-            if (!DataValidator.isNonEmptyString(username)) {
-                throw new IllegalArgumentException("Логин не может быть пустым.");
-            }
+            // Проверка уникальности
+            validateUsername(username);
+            validatePassword(password);
 
-            // Проверка длины логина
-            if (!DataValidator.isStringLengthValid(username, 20)) {
-                throw new IllegalArgumentException("Логин не может быть длиннее 20 символов.");
-            }
+            List<User> users = userRepository.loadUsers();
 
-            // Проверка формата логина
-            if (!DataValidator.isValidLogin(username)) {
-                throw new IllegalArgumentException("Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
-            }
-
-            // Проверка уникальности логина
-            List<String> existingUsernames = new ArrayList<>();
-            for (User user : users) {
-                existingUsernames.add(user.getUsername());
-            }
-
-            if (!DataValidator.isUniqueName(username, existingUsernames)) {
+            if (users.stream().anyMatch(user -> user.getUsername().equals(username))) {
                 throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
             }
 
-            // Проверка пароля
-            if (!DataValidator.isValidPassword(password)) {
-                throw new IllegalArgumentException("Пароль должен быть минимум 6 символов.");
-            }
+            users.add(new User(username, password)); // Добавляем нового пользователя
+            userRepository.saveUsers(users); // Сохраняем полный список
 
-            // Создание нового пользователя
-            User newUser = new User(username, password);
-            users.add(newUser);
-
-            // Сохранение пользователя
-            userRepository.saveUsers(users);
             System.out.println("Пользователь успешно зарегистрирован.");
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при сохранении пользователя: " + e.getMessage());
         }
+    }
+
+    /**
+     * Найти пользователя по логину.
+     *
+     * @param username Логин пользователя.
+     * @return Пользователь, если найден, иначе null.
+     */
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
     }
 
     /**
@@ -86,42 +76,33 @@ public class UserService {
      *
      * @param username Логин пользователя.
      * @param password Пароль пользователя.
+     * @return true, если авторизация успешна; иначе false.
      */
-    public void authenticateUser(String username, String password) {
+    public boolean authenticateUser(String username, String password) {
         try {
-            // Проверка, что логин не пустой
-            if (!DataValidator.isNonEmptyString(username)) {
-                throw new IllegalArgumentException("Логин не может быть пустым.");
+            // Проверяем формат логина и пароля
+            validateUsername(username);
+            validatePassword(password);
+
+            // Ищем пользователя по логину
+            User user = findUserByUsername(username);
+            if (user == null) {
+                System.out.println("Ошибка: Пользователь с логином '" + username + "' не найден.");
+                return false;
             }
 
-            // Проверка длины логина
-            if (!DataValidator.isStringLengthValid(username, 20)) {
-                throw new IllegalArgumentException("Логин не может быть длиннее 20 символов.");
-            }
-
-            // Проверка, что пароль не пустой
-            if (!DataValidator.isNonEmptyString(password)) {
-                throw new IllegalArgumentException("Пароль не может быть пустым.");
-            }
-
-            // Поиск пользователя по логину и паролю
-            User user = null;
-            for (User u : users) {
-                if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                    user = u;
-                    break;
-                }
-            }
-
-            if (user != null) {
+            // Проверяем пароль
+            if (user.getPassword().equals(password)) {
+                currentUser = user; // Устанавливаем текущего пользователя
                 System.out.println("Добро пожаловать, " + user.getUsername() + "!");
-            } else {
-                System.out.println("Ошибка: Неверный логин или пароль.");
+                return true;
             }
+
+            System.out.println("Ошибка: Неверный пароль.");
+            return false;
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при авторизации: " + e.getMessage());
+            return false;
         }
     }
 
@@ -133,114 +114,135 @@ public class UserService {
      */
     public void changePassword(String oldPassword, String newPassword) {
         try {
-            // Проверка, что старый пароль не пустой
-            if (!DataValidator.isNonEmptyString(oldPassword)) {
-                throw new IllegalArgumentException("Старый пароль не может быть пустым.");
+            validatePassword(newPassword);
+
+            if (currentUser == null || !currentUser.getPassword().equals(oldPassword)) {
+                throw new IllegalArgumentException("Неверный старый пароль.");
             }
 
-            // Проверка, что новый пароль не пустой
-            if (!DataValidator.isNonEmptyString(newPassword)) {
-                throw new IllegalArgumentException("Новый пароль не может быть пустым.");
-            }
+            List<User> users = userRepository.loadUsers();
 
-            // Проверка длины нового пароля
-            if (!DataValidator.isValidPassword(newPassword)) {
-                throw new IllegalArgumentException("Пароль должен быть минимум 6 символов.");
-            }
-
-            // Обновление пароля
-            boolean isUpdated = false;
+            // Обновляем пароль текущего пользователя
             for (User user : users) {
-                if (user.getPassword().equals(oldPassword)) {
+                if (user.getUsername().equals(currentUser.getUsername())) {
                     user.setPassword(newPassword);
-                    isUpdated = true;
+                    break;
                 }
             }
 
-            // Проверка результата обновления
-            if (isUpdated) {
-                userRepository.saveUsers(users); // Сохраняем изменения
-                System.out.println("Пароль успешно изменён.");
-            } else {
-                throw new IllegalArgumentException("Неверный старый пароль.");
-            }
+            // Сохраняем изменения
+            userRepository.saveUsers(users);
+
+            // Обновляем текущего пользователя
+            currentUser.setPassword(newPassword);
+
+            System.out.println("Пароль успешно изменён.");
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при сохранении данных: " + e.getMessage());
         }
     }
 
     /**
      * Изменение логина пользователя.
      *
-     * @param oldUsername Старый логин.
      * @param newUsername Новый логин.
      */
-    public void changeUsername(String oldUsername, String newUsername) {
+    public void changeUsername(String newUsername) {
         try {
-            // Проверка, что старый логин не пустой
-            if (!DataValidator.isNonEmptyString(oldUsername)) {
-                throw new IllegalArgumentException("Старый логин не может быть пустым.");
+            validateUsername(newUsername);
+
+            if (currentUser == null) {
+                throw new IllegalArgumentException("Пользователь не авторизован.");
             }
 
-            // Проверка, что новый логин не пустой
-            if (!DataValidator.isNonEmptyString(newUsername)) {
-                throw new IllegalArgumentException("Новый логин не может быть пустым.");
-            }
-
-            // Проверка длины нового логина
-            if (!DataValidator.isStringLengthValid(newUsername, 20)) {
-                throw new IllegalArgumentException("Логин не может быть длиннее 20 символов.");
-            }
-
-            // Проверка формата нового логина
-            if (!DataValidator.isValidLogin(newUsername)) {
-                throw new IllegalArgumentException("Некорректный логин. Используйте буквы, цифры или '_'. Длина: 4-20 символов.");
-            }
-
-            // Проверка уникальности нового логина
-            List<String> existingUsernames = new ArrayList<>();
-            for (User user : users) {
-                existingUsernames.add(user.getUsername());
-            }
-
-            if (!DataValidator.isUniqueName(newUsername, existingUsernames)) {
+            // Проверяем, что логин уникален с помощью findUserByUsername
+            if (findUserByUsername(newUsername) != null) {
                 throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
             }
 
-            // Обновление логина
-            boolean isUpdated = false;
+            List<User> users = userRepository.loadUsers();
+
+            // Обновляем данные текущего пользователя
             for (User user : users) {
-                if (user.getUsername().equals(oldUsername)) {
+                if (user.getUsername().equals(currentUser.getUsername())) {
                     user.setUsername(newUsername);
-                    isUpdated = true;
+                    break;
                 }
             }
 
-            // Проверка результата обновления
-            if (isUpdated) {
-                userRepository.saveUsers(users); // Сохранение изменений
-                System.out.println("Логин успешно изменён.");
-            } else {
-                throw new IllegalArgumentException("Старый логин не найден.");
-            }
+            // Сохраняем изменения в списке пользователей
+            userRepository.saveUsers(users);
+
+            // Обновляем связанные данные
+            updateWalletsUserId(currentUser.getUsername(), newUsername);
+            updateCategoriesUserId(currentUser.getUsername(), newUsername);
+
+            // Обновляем текущего пользователя
+            currentUser.setUsername(newUsername);
+
+            System.out.println("Логин успешно изменён.");
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при сохранении данных: " + e.getMessage());
         }
     }
 
     /**
-     * Получить список всех зарегистрированных пользователей.
+     * Обновляет userId в кошельках.
      *
-     * @return Список пользователей.
-     * @deprecated Этот метод в текущей версии не используется.
-     * Возможно, пригодится для администраторской панели или аналитики в будущем.
+     * @param oldUserId Старый userId.
+     * @param newUserId Новый userId.
      */
-    @Deprecated
-    public List<User> getAllUsers() {
-        return users;
+    private void updateWalletsUserId(String oldUserId, String newUserId) {
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(oldUserId);
+        for (Wallet wallet : wallets) {
+            wallet.setUserId(newUserId);
+        }
+        walletRepository.saveWallets(wallets);
+    }
+
+    /**
+     * Обновляет userId в категориях.
+     *
+     * @param oldUserId Старый userId.
+     * @param newUserId Новый userId.
+     */
+    private void updateCategoriesUserId(String oldUserId, String newUserId) {
+        List<Category> categories = categoryRepository.findCategoriesByUserId(oldUserId);
+        for (Category category : categories) {
+            category.setUserId(newUserId);
+        }
+        categoryRepository.saveCategories(categories);
+    }
+
+    /**
+     * Получить текущего авторизованного пользователя.
+     *
+     * @return Текущий пользователь или null, если пользователь не авторизован.
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
+     * Проверяет корректность логина.
+     *
+     * @param username Логин для проверки.
+     */
+    private void validateUsername(String username) {
+        if (!DataValidator.isNonEmptyString(username) || !DataValidator.isStringLengthValid(username, 20) ||
+                !DataValidator.isValidLogin(username)) {
+            throw new IllegalArgumentException("Некорректный логин.");
+        }
+    }
+
+    /**
+     * Проверяет корректность пароля.
+     *
+     * @param password Пароль для проверки.
+     */
+    private void validatePassword(String password) {
+        if (!DataValidator.isNonEmptyString(password) || !DataValidator.isValidPassword(password)) {
+            throw new IllegalArgumentException("Некорректный пароль.");
+        }
     }
 }

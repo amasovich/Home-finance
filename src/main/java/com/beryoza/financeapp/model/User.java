@@ -1,33 +1,28 @@
 package com.beryoza.financeapp.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Класс для представления пользователя.
- * Хранит логин, пароль и список кошельков.
+ * Хранит информацию о логине и пароле.
+ * Данные о кошельках пользователя хранятся отдельно.
  */
 public class User {
-    // Логин пользователя
-    private String username;
-
-    // Пароль пользователя
-    private String password;
-
-    // Все кошельки, которые добавил пользователь
-    private List<Wallet> wallets;
+    private String username; // Логин пользователя
+    private String password; // Пароль пользователя
 
     /**
-     * Конструктор. Передаём логин и пароль,
-     * а список кошельков пока будет пустой.
+     * Конструктор для десериализации Jackson.
      *
      * @param username Логин пользователя.
      * @param password Пароль пользователя.
      */
-    public User(String username, String password) {
+    @JsonCreator
+    public User(@JsonProperty("username") String username,
+                @JsonProperty("password") String password) {
         this.username = username;
         this.password = password;
-        this.wallets = new ArrayList<>(); // Список для кошельков пользователя
     }
 
     /**
@@ -67,68 +62,13 @@ public class User {
     }
 
     /**
-     * Получить список кошельков пользователя.
-     *
-     * @return Список кошельков.
-     */
-    public List<Wallet> getWallets() {
-        return wallets;
-    }
-
-    /**
-     * Установить новый список кошельков.
-     * Резервный метод. Может понадобиться для операций импорта/экспорта или массового обновления.
-     *
-     * @param wallets Новый список кошельков.
-     */
-    @Deprecated
-    public void setWallets(List<Wallet> wallets) {
-        this.wallets = wallets;
-    }
-
-    /**
-     * Добавить кошелёк в список пользователя.
-     *
-     * @param wallet Кошелёк, который нужно добавить.
-     */
-    public void addWallet(Wallet wallet) {
-        this.wallets.add(wallet);
-    }
-
-    /**
-     * Удалить кошелёк из списка пользователя.
-     *
-     * @param wallet Кошелёк, который нужно удалить.
-     */
-    public void removeWallet(Wallet wallet) {
-        this.wallets.remove(wallet);
-    }
-
-    /**
-     * Найти кошелёк по названию.
-     *
-     * @param walletName Название кошелька.
-     * @return Кошелёк, если найден; иначе null.
-     */
-    public Wallet findWalletByName(String walletName) {
-        for (Wallet wallet : wallets) {
-            if (wallet.getName().equals(walletName)) {
-                return wallet;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Получить строковое представление объекта User.
      *
      * @return Информация о пользователе в текстовом формате.
      */
-    @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
-                ", wallets=" + wallets +
                 '}';
     }
 }

@@ -1,6 +1,8 @@
 package com.beryoza.financeapp.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +14,14 @@ import java.util.List;
  * Предоставляет методы для сохранения и загрузки данных.
  */
 public abstract class FileRepository {
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Для работы с JSON
+    protected final ObjectMapper objectMapper;
+
+    public FileRepository() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Регистрация модуля для LocalDate
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT); // Включаем форматированный вывод
+
+    }
 
     /**
      * Сохранить данные в файл.
@@ -23,7 +32,13 @@ public abstract class FileRepository {
      * @throws IOException Если произошла ошибка при записи.
      */
     protected <T> void saveDataToFile(String filePath, List<T> data) throws IOException {
-        objectMapper.writeValue(new File(filePath), data);
+        try {
+            objectMapper.writeValue(new File(filePath), data);
+            System.out.println("Данные успешно сохранены в " + filePath);
+        } catch (IOException e) {
+            System.err.println("Ошибка при сохранении данных в " + filePath + ": " + e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -37,8 +52,8 @@ public abstract class FileRepository {
      */
     protected <T> List<T> loadDataFromFile(String filePath, Class<T> type) throws IOException {
         File file = new File(filePath);
-        if (!file.exists()) {
-            return new ArrayList<>(); // Если файла нет, возвращаем пустой список
+        if (!file.exists() || file.length() == 0) {
+            return new ArrayList<>(); // Если файл отсутствует или пустой, возвращаем пустой список
         }
         return objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, type));
     }
