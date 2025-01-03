@@ -66,7 +66,7 @@
 1. **Склонировать репозиторий:**
 
    ```bash
-   git clone https://github.com/ваш_проект/domashnie-finansy.git
+   git clone https://github.com/amasovich/Home-finance.git
    cd domashnie-finansy
    ```
 
@@ -181,4 +181,4 @@ domashnie-finansy
 ## Контакты и автор
 
 Проект реализован Березняком Владимиром в рамках учебного задания МИФИ.
-Если у вас есть вопросы или предложения, обращайтесь через [GitHub Issues](https://github.com/ваш_проект/domashnie-finansy/issues).
+Если у вас есть вопросы или предложения, обращайтесь через [GitHub Issues](https://github.com/amasovich/Home-finance/issues).
