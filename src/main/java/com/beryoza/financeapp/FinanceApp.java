@@ -7,6 +7,7 @@ import com.beryoza.financeapp.controller.WalletController;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.repository.UserRepository;
 import com.beryoza.financeapp.repository.WalletRepository;
+import com.beryoza.financeapp.repository.CategoryRepository;
 import com.beryoza.financeapp.service.BudgetService;
 import com.beryoza.financeapp.service.UserService;
 import com.beryoza.financeapp.service.WalletService;
@@ -25,11 +26,12 @@ public class FinanceApp {
         // Инициализация репозиториев
         UserRepository userRepository = new UserRepository();
         WalletRepository walletRepository = new WalletRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
 
         // Инициализация сервисов
-        UserService userService = new UserService(userRepository);
+        UserService userService = new UserService(userRepository, walletRepository, categoryRepository);
         WalletService walletService = new WalletService(walletRepository);
-        BudgetService budgetService = new BudgetService(walletRepository);
+        BudgetService budgetService = new BudgetService(walletRepository, categoryRepository);
 
         // Инициализация контроллеров
         UserController userController = new UserController(userService, scanner);
@@ -106,13 +108,16 @@ public class FinanceApp {
      * @param userService Сервис для работы с пользователями.
      */
     private static void register(Scanner scanner, UserService userService) {
-        System.out.print("Введите логин: ");
-        String username = scanner.nextLine();
-        System.out.print("Введите пароль: ");
-        String password = scanner.nextLine();
+        try {
+            System.out.print("Введите логин: ");
+            String username = scanner.nextLine();
+            System.out.print("Введите пароль: ");
+            String password = scanner.nextLine();
 
-        userService.registerUser(username, password);
-        System.out.println("Регистрация успешно завершена.");
+            userService.registerUser(username, password);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
     }
 
     /**

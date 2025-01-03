@@ -36,7 +36,7 @@ public class WalletController {
             System.out.println("2. Удалить кошелёк");
             System.out.println("3. Просмотреть список кошельков");
             System.out.println("4. Подсчитать доходы и расходы");
-            System.out.println("5. Вывести данные по бюджету");
+            System.out.println("5. Вывести данные по кошелькам и бюджету");
             System.out.println("6. Вернуться в главное меню");
 
             try {

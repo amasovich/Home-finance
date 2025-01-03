@@ -1,10 +1,13 @@
 package com.beryoza.financeapp.service;
 
+import com.beryoza.financeapp.model.Category;
 import com.beryoza.financeapp.model.User;
-import com.beryoza.financeapp.util.DataValidator;
+import com.beryoza.financeapp.model.Wallet;
+import com.beryoza.financeapp.repository.CategoryRepository;
 import com.beryoza.financeapp.repository.UserRepository;
+import com.beryoza.financeapp.repository.WalletRepository;
+import com.beryoza.financeapp.util.DataValidator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,16 +15,22 @@ import java.util.List;
  * Обеспечивает регистрацию, авторизацию, изменение данных и выход из системы.
  */
 public class UserService {
-    private final UserRepository userRepository; // Репозиторий для работы с данными пользователей
+    private final UserRepository userRepository; // Репозиторий для работы с пользователями
+    private final WalletRepository walletRepository; // Репозиторий для работы с кошельками
+    private final CategoryRepository categoryRepository; // Репозиторий для работы с категориями
     private User currentUser; // Текущий авторизованный пользователь
 
     /**
-     * Конструктор. Инициализирует репозиторий пользователей.
+     * Конструктор.
      *
-     * @param userRepository Репозиторий для работы с данными пользователей.
+     * @param userRepository    Репозиторий для работы с пользователями.
+     * @param walletRepository  Репозиторий для работы с кошельками.
+     * @param categoryRepository Репозиторий для работы с категориями.
      */
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, WalletRepository walletRepository, CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
+        this.walletRepository = walletRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -153,8 +162,12 @@ public class UserService {
                 }
             }
 
-            // Сохраняем изменения
+            // Сохраняем изменения в списке пользователей
             userRepository.saveUsers(users);
+
+            // Обновляем связанные данные
+            updateWalletsUserId(currentUser.getUsername(), newUsername);
+            updateCategoriesUserId(currentUser.getUsername(), newUsername);
 
             // Обновляем текущего пользователя
             currentUser.setUsername(newUsername);
@@ -163,6 +176,34 @@ public class UserService {
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
         }
+    }
+
+    /**
+     * Обновляет userId в кошельках.
+     *
+     * @param oldUserId Старый userId.
+     * @param newUserId Новый userId.
+     */
+    private void updateWalletsUserId(String oldUserId, String newUserId) {
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(oldUserId);
+        for (Wallet wallet : wallets) {
+            wallet.setUserId(newUserId);
+        }
+        walletRepository.saveWallets(wallets);
+    }
+
+    /**
+     * Обновляет userId в категориях.
+     *
+     * @param oldUserId Старый userId.
+     * @param newUserId Новый userId.
+     */
+    private void updateCategoriesUserId(String oldUserId, String newUserId) {
+        List<Category> categories = categoryRepository.findCategoriesByUserId(oldUserId);
+        for (Category category : categories) {
+            category.setUserId(newUserId);
+        }
+        categoryRepository.saveCategories(categories);
     }
 
     /**

@@ -64,7 +64,7 @@ public class BudgetController {
         try {
             System.out.print("Введите название категории: ");
             String categoryName = scanner.nextLine();
-            System.out.print("Введите лимит бюджета (введите 0, если лимит не нужен): ");
+            System.out.print("Введите лимит бюджета (от 0 до 100_000_000): ");
             double budgetLimit = Double.parseDouble(scanner.nextLine());
 
             budgetService.addCategory(user, categoryName, budgetLimit);

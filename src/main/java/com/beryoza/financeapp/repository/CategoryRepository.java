@@ -23,7 +23,8 @@ public class CategoryRepository extends FileRepository {
     }
 
     /**
-     * Убедиться, что директория для хранения категорий существует.
+     * Проверяет существование директории для хранения категорий.
+     * Если директория отсутствует, она создаётся.
      */
     private void ensureDirectoriesExist() {
         File directory = new File("data/categories");
@@ -33,8 +34,8 @@ public class CategoryRepository extends FileRepository {
     }
 
     /**
-     * Убедиться, что файл для категорий существует.
-     * Если файл пуст, инициализировать его пустым списком.
+     * Проверяет существование файла для хранения категорий.
+     * Если файл отсутствует или пуст, он создаётся и инициализируется пустым списком категорий.
      */
     private void ensureFileExists() {
         File file = new File(FILE_PATH);
@@ -49,9 +50,9 @@ public class CategoryRepository extends FileRepository {
     }
 
     /**
-     * Сохранить список категорий в файл.
+     * Сохраняет список категорий в файл.
      *
-     * @param categories Список категорий.
+     * @param categories Список категорий для сохранения.
      */
     public void saveCategories(List<Category> categories) {
         try {
@@ -63,9 +64,9 @@ public class CategoryRepository extends FileRepository {
     }
 
     /**
-     * Загрузить список категорий из файла.
+     * Загружает список категорий из файла.
      *
-     * @return Список категорий.
+     * @return Список категорий, если файл успешно загружен; пустой список в случае ошибки.
      */
     public List<Category> loadCategories() {
         try {
@@ -74,5 +75,39 @@ public class CategoryRepository extends FileRepository {
             System.err.println("Ошибка при загрузке категорий: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Поиск категорий для указанного пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Список категорий, принадлежащих пользователю.
+     */
+    public List<Category> findCategoriesByUserId(String userId) {
+        List<Category> allCategories = loadCategories();
+        List<Category> userCategories = new ArrayList<>();
+        for (Category category : allCategories) {
+            if (category.getUserId().equals(userId)) {
+                userCategories.add(category);
+            }
+        }
+        return userCategories;
+    }
+
+    /**
+     * Поиск категории по названию и userId.
+     *
+     * @param userId Идентификатор пользователя.
+     * @param name   Название категории.
+     * @return Категория, если найдена; иначе null.
+     */
+    public Category findCategoryByName(String userId, String name) {
+        List<Category> allCategories = loadCategories();
+        for (Category category : allCategories) {
+            if (category.getUserId().equals(userId) && category.getName().equalsIgnoreCase(name)) {
+                return category;
+            }
+        }
+        return null;
     }
 }

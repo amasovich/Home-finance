@@ -4,13 +4,11 @@ import com.beryoza.financeapp.model.Category;
 import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.User;
 import com.beryoza.financeapp.model.Wallet;
+import com.beryoza.financeapp.repository.CategoryRepository;
 import com.beryoza.financeapp.repository.WalletRepository;
 import com.beryoza.financeapp.util.DataValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Сервис для управления категориями и бюджетами.
@@ -18,14 +16,17 @@ import java.util.HashMap;
  */
 public class BudgetService {
     private final WalletRepository walletRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * Конструктор для инициализации BudgetService.
      *
-     * @param walletRepository Репозиторий для работы с кошельками.
+     * @param walletRepository   Репозиторий для работы с кошельками.
+     * @param categoryRepository Репозиторий для работы с категориями.
      */
-    public BudgetService(WalletRepository walletRepository) {
+    public BudgetService(WalletRepository walletRepository, CategoryRepository categoryRepository) {
         this.walletRepository = walletRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -36,24 +37,21 @@ public class BudgetService {
      * @param budgetLimit  Лимит бюджета для категории.
      */
     public void addCategory(User user, String categoryName, double budgetLimit) {
-        try {
-            validateCategoryName(categoryName);
-            validateBudgetLimit(budgetLimit);
+        validateCategoryName(categoryName);
+        validateBudgetLimit(budgetLimit);
 
-            List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
-            for (Wallet wallet : wallets) {
-                for (Transaction transaction : wallet.getTransactions()) {
-                    if (transaction.getCategory().getName().equals(categoryName)) {
-                        throw new IllegalArgumentException("Категория с таким названием уже существует.");
-                    }
-                }
-            }
+        Category existingCategory = categoryRepository.findCategoryByName(user.getUsername(), categoryName);
 
-            System.out.println("Категория успешно добавлена. " +
-                    "Добавьте транзакцию, чтобы категория появилась в отчётах.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
+        if (existingCategory != null) {
+            throw new IllegalArgumentException("Категория с таким названием уже существует.");
         }
+
+        Category newCategory = new Category(user.getUsername(), categoryName, budgetLimit);
+        List<Category> categories = categoryRepository.loadCategories();
+        categories.add(newCategory);
+        categoryRepository.saveCategories(categories);
+
+        System.out.println("Категория успешно добавлена.");
     }
 
     /**
@@ -64,31 +62,26 @@ public class BudgetService {
      * @param newLimit     Новый лимит бюджета.
      */
     public void updateBudgetLimit(User user, String categoryName, double newLimit) {
-        try {
-            validateCategoryName(categoryName);
-            validateBudgetLimit(newLimit);
+        validateCategoryName(categoryName);
+        validateBudgetLimit(newLimit);
 
-            List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
-            boolean isUpdated = false;
+        List<Category> categories = categoryRepository.loadCategories();
+        boolean updated = false;
 
-            for (Wallet wallet : wallets) {
-                for (Transaction transaction : wallet.getTransactions()) {
-                    if (transaction.getCategory().getName().equals(categoryName)) {
-                        transaction.getCategory().setBudgetLimit(newLimit);
-                        isUpdated = true;
-                    }
-                }
+        for (Category category : categories) {
+            if (category.getUserId().equals(user.getUsername()) && category.getName().equals(categoryName)) {
+                category.setBudgetLimit(newLimit);
+                updated = true;
+                break;
             }
-
-            if (!isUpdated) {
-                throw new IllegalArgumentException("Категория с таким названием не найдена.");
-            }
-
-            walletRepository.saveWallets(wallets);
-            System.out.println("Лимит бюджета успешно обновлён.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
         }
+
+        if (!updated) {
+            throw new IllegalArgumentException("Категория с таким названием не найдена.");
+        }
+
+        categoryRepository.saveCategories(categories);
+        System.out.println("Лимит бюджета для категории \"" + categoryName + "\" успешно обновлён.");
     }
 
     /**
@@ -97,7 +90,7 @@ public class BudgetService {
      * @param user Пользователь.
      */
     public void listCategories(User user) {
-        List<Category> categories = extractCategories(user);
+        List<Category> categories = categoryRepository.findCategoriesByUserId(user.getUsername());
 
         if (categories.isEmpty()) {
             System.out.println("Категории отсутствуют.");
@@ -118,15 +111,17 @@ public class BudgetService {
      */
     public void calculateBudgetState(User user) {
         Map<String, Double> expensesByCategory = new HashMap<>();
-        List<Category> categories = extractCategories(user);
+        List<Category> categories = categoryRepository.findCategoriesByUserId(user.getUsername());
 
-        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
-        for (Wallet wallet : wallets) {
-            for (Transaction transaction : wallet.getTransactions()) {
-                String categoryName = transaction.getCategory().getName();
-                expensesByCategory.put(categoryName,
-                        expensesByCategory.getOrDefault(categoryName, 0.0) + transaction.getAmount());
-            }
+        List<Transaction> transactions = new ArrayList<>();
+        for (Wallet wallet : walletRepository.loadWalletsByUser(user.getUsername())) {
+            transactions.addAll(wallet.getTransactions());
+        }
+
+        for (Transaction transaction : transactions) {
+            String categoryName = transaction.getCategory().getName();
+            expensesByCategory.put(categoryName,
+                    expensesByCategory.getOrDefault(categoryName, 0.0) + transaction.getAmount());
         }
 
         System.out.println("Состояние бюджета по категориям:");
@@ -159,30 +154,8 @@ public class BudgetService {
      * @param budgetLimit Лимит бюджета.
      */
     private void validateBudgetLimit(double budgetLimit) {
-        if (!DataValidator.isPositiveNumber(String.valueOf(budgetLimit)) ||
-                !DataValidator.isNumberInRange(budgetLimit, 0, 100_000_000)) {
+        if (!DataValidator.isNumberInRange(budgetLimit, 0, 100_000_000)) {
             throw new IllegalArgumentException("Некорректный лимит бюджета.");
         }
-    }
-
-    /**
-     * Извлечь уникальные категории из транзакций пользователя.
-     *
-     * @param user Пользователь.
-     * @return Список уникальных категорий.
-     */
-    private List<Category> extractCategories(User user) {
-        List<Category> categories = new ArrayList<>();
-        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
-
-        for (Wallet wallet : wallets) {
-            for (Transaction transaction : wallet.getTransactions()) {
-                if (!categories.contains(transaction.getCategory())) {
-                    categories.add(transaction.getCategory());
-                }
-            }
-        }
-
-        return categories;
     }
 }

@@ -50,16 +50,6 @@ public class DataValidator {
     }
 
     /**
-     * Проверяет, является ли строка допустимой категорией.
-     *
-     * @param category Строка для проверки.
-     * @return true, если строка является допустимой категорией; иначе false.
-     */
-    public static boolean isValidCategory(String category) {
-        return isNonEmptyString(category) && category.matches("^[a-zA-Z0-9 ]+$");
-    }
-
-    /**
      * Проверяет, является ли строка корректной датой.
      *
      * @param dateStr Строка с датой.
@@ -86,17 +76,6 @@ public class DataValidator {
      */
     public static boolean isNumberInRange(double number, double min, double max) {
         return number >= min && number <= max;
-    }
-
-    /**
-     * Проверяет, является ли строка уникальной среди существующих значений.
-     *
-     * @param name          Проверяемая строка.
-     * @param existingNames Список существующих строк.
-     * @return true, если строка уникальна; иначе false.
-     */
-    public static boolean isUniqueName(String name, List<String> existingNames) {
-        return !existingNames.contains(name);
     }
 
     /**
