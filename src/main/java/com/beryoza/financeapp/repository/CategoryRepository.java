@@ -9,6 +9,9 @@ import java.util.List;
 
 /**
  * Репозиторий для работы с категориями и их бюджетами.
+ * <p>
+ * Поля:
+ * - {@code String FILE_PATH} — путь к файлу, в котором хранятся данные категорий.
  */
 public class CategoryRepository extends FileRepository {
     private static final String FILE_PATH = "data/categories/categories.json";

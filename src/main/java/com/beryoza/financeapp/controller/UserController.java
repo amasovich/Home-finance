@@ -6,6 +6,10 @@ import java.util.Scanner;
 
 /**
  * Контроллер для управления пользователями.
+ * <p>
+ * Поля:
+ * - {@link UserService} userService — сервис для работы с пользователями.
+ * - {@link Scanner} scanner — сканер для чтения пользовательского ввода.
  */
 public class UserController {
     private final UserService userService;

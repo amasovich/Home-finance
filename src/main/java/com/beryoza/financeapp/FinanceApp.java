@@ -17,9 +17,18 @@ import java.util.Scanner;
 /**
  * Главный класс приложения "Домашние финансы".
  * Отвечает за инициализацию компонентов и запуск главного меню приложения.
+ * <p>
+ * Основные этапы работы:
+ * - Инициализация репозиториев для взаимодействия с файлами данных.
+ * - Инициализация сервисов для работы с пользователями, кошельками, бюджетами.
+ * - Инициализация контроллеров для взаимодействия с пользователем.
+ * - Запуск основного меню приложения.
  */
 public class FinanceApp {
 
+    /**
+     * Точка входа в приложение.
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -122,12 +131,14 @@ public class FinanceApp {
 
     /**
      * Меню после авторизации пользователя.
+     * Предоставляет доступ к функциям управления кошельками, бюджетами, транзакциями и данными пользователя.
      *
-     * @param scanner       Сканер для пользовательского ввода.
-     * @param currentUser   Авторизованный пользователь.
+     * @param scanner        Сканер для пользовательского ввода.
+     * @param currentUser    Авторизованный пользователь.
      * @param userController Контроллер управления пользователями.
-     * @param walletService Сервис для работы с кошельками.
-     * @param budgetService Сервис для работы с бюджетом.
+     * @param walletService  Сервис для работы с кошельками.
+     * @param budgetService  Сервис для работы с бюджетом.
+     * @param userService    Сервис для работы с пользователями.
      */
     private static void manageUserSession(Scanner scanner, User currentUser, UserController userController,
                                           WalletService walletService, BudgetService budgetService, UserService userService) {

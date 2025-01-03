@@ -9,10 +9,12 @@ import java.util.List;
 
 /**
  * Репозиторий для работы с кошельками и транзакциями.
- * Хранит данные кошельков в одном файле, фильтруя их по userId.
+ * Хранит данные кошельков в одном файле, предоставляя возможность фильтрации по userId.
+ * <p>
+ * Поля:
+ * - {@code String FILE_PATH} — путь к файлу, где хранятся данные всех кошельков.
  */
 public class WalletRepository extends FileRepository {
-    // Путь к файлу для хранения всех кошельков
     private static final String FILE_PATH = "data/wallets/wallets.json";
 
     /**
@@ -31,7 +33,7 @@ public class WalletRepository extends FileRepository {
     private void ensureDirectoriesExist() {
         File directory = new File("data/wallets");
         if (!directory.exists()) {
-            directory.mkdirs(); // Создаём директорию
+            directory.mkdirs();
         }
     }
 
@@ -43,8 +45,8 @@ public class WalletRepository extends FileRepository {
         File file = new File(FILE_PATH);
         try {
             if (!file.exists() || file.length() == 0) {
-                file.createNewFile(); // Создаём файл
-                saveWallets(new ArrayList<>()); // Сохраняем пустой список
+                file.createNewFile();
+                saveWallets(new ArrayList<>());
             }
         } catch (IOException e) {
             System.err.println("Ошибка при создании файла кошельков: " + e.getMessage());
@@ -58,7 +60,7 @@ public class WalletRepository extends FileRepository {
      */
     public void saveWallets(List<Wallet> wallets) {
         try {
-            saveDataToFile(FILE_PATH, wallets); // Используем метод из FileRepository
+            saveDataToFile(FILE_PATH, wallets);
             System.out.println("Данные кошельков успешно сохранены.");
         } catch (IOException e) {
             System.err.println("Ошибка при сохранении кошельков: " + e.getMessage());
@@ -72,15 +74,14 @@ public class WalletRepository extends FileRepository {
      */
     public List<Wallet> loadWallets() {
         try {
-            // Загружаем список кошельков из файла
             List<Wallet> wallets = loadDataFromFile(FILE_PATH, Wallet.class);
             if (wallets == null) {
-                wallets = new ArrayList<>(); // Возвращаем пустой список, если файл пустой
+                wallets = new ArrayList<>();
             }
             return wallets;
         } catch (IOException e) {
             System.err.println("Ошибка при загрузке кошельков: " + e.getMessage());
-            return new ArrayList<>(); // Возвращаем пустой список при ошибке
+            return new ArrayList<>();
         }
     }
 
@@ -91,11 +92,11 @@ public class WalletRepository extends FileRepository {
      * @return Список кошельков, принадлежащих пользователю.
      */
     public List<Wallet> loadWalletsByUser(String userId) {
-        List<Wallet> allWallets = loadWallets(); // Загружаем все кошельки
+        List<Wallet> allWallets = loadWallets();
         List<Wallet> userWallets = new ArrayList<>();
         for (Wallet wallet : allWallets) {
             if (wallet.getUserId().equals(userId)) {
-                userWallets.add(wallet); // Фильтруем по userId
+                userWallets.add(wallet);
             }
         }
         return userWallets;
@@ -108,27 +109,24 @@ public class WalletRepository extends FileRepository {
      */
     public void saveWallet(Wallet wallet) {
         try {
-            List<Wallet> wallets = loadWallets(); // Загружаем все кошельки
+            List<Wallet> wallets = loadWallets();
 
             boolean walletUpdated = false;
 
-            // Обновляем существующий кошелёк
             for (int i = 0; i < wallets.size(); i++) {
                 Wallet existingWallet = wallets.get(i);
                 if (existingWallet.getUserId().equals(wallet.getUserId()) &&
                         existingWallet.getName().equals(wallet.getName())) {
-                    wallets.set(i, wallet); // Обновляем данные кошелька
+                    wallets.set(i, wallet);
                     walletUpdated = true;
                     break;
                 }
             }
 
-            // Если кошелёк не найден, добавляем новый
             if (!walletUpdated) {
                 wallets.add(wallet);
             }
 
-            // Сохраняем обновлённый список кошельков
             saveWallets(wallets);
         } catch (Exception e) {
             System.err.println("Ошибка при сохранении кошелька: " + e.getMessage());

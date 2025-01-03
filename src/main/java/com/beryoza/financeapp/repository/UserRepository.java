@@ -10,9 +10,11 @@ import java.util.List;
 /**
  * Репозиторий для работы с данными пользователей.
  * Обеспечивает загрузку и сохранение пользователей в файл.
+ * <p>
+ * Поля:
+ * - {@code String FILE_PATH} — путь к файлу, где хранятся данные пользователей.
  */
 public class UserRepository extends FileRepository {
-    // Путь к файлу, где хранятся данные пользователей
     private static final String FILE_PATH = "data/users/users.json";
 
     /**
@@ -31,7 +33,7 @@ public class UserRepository extends FileRepository {
     private void ensureDirectoriesExist() {
         File directory = new File("data/users");
         if (!directory.exists()) {
-            directory.mkdirs(); // Создаём директорию
+            directory.mkdirs();
         }
     }
 
@@ -43,8 +45,8 @@ public class UserRepository extends FileRepository {
         File file = new File(FILE_PATH);
         try {
             if (!file.exists() || file.length() == 0) {
-                file.createNewFile(); // Создаём файл
-                saveUsers(new ArrayList<>()); // Сохраняем пустой список
+                file.createNewFile();
+                saveUsers(new ArrayList<>());
             }
         } catch (IOException e) {
             System.err.println("Ошибка при создании файла пользователей: " + e.getMessage());
@@ -58,7 +60,7 @@ public class UserRepository extends FileRepository {
      */
     public void saveUsers(List<User> users) {
         try {
-            saveDataToFile(FILE_PATH, users); // Записываем полный список в файл
+            saveDataToFile(FILE_PATH, users);
             System.out.println("Данные пользователей успешно сохранены.");
         } catch (IOException e) {
             System.err.println("Ошибка при сохранении пользователей: " + e.getMessage());
@@ -72,14 +74,14 @@ public class UserRepository extends FileRepository {
      */
     public List<User> loadUsers() {
         try {
-            List<User> users = loadDataFromFile(FILE_PATH, User.class); // Загружаем список пользователей
+            List<User> users = loadDataFromFile(FILE_PATH, User.class);
             if (users == null) {
-                users = new ArrayList<>(); // Инициализируем пустой список, если файл пустой
+                users = new ArrayList<>();
             }
             return users;
         } catch (IOException e) {
             System.err.println("Ошибка при загрузке пользователей: " + e.getMessage());
-            return new ArrayList<>(); // Возвращаем пустой список при ошибке
+            return new ArrayList<>();
         }
     }
 
@@ -93,9 +95,9 @@ public class UserRepository extends FileRepository {
         List<User> users = loadUsers();
         for (User user : users) {
             if (user.getUsername().equals(username)) {
-                return user; // Возвращаем найденного пользователя
+                return user;
             }
         }
-        return null; // Если пользователь не найден
+        return null;
     }
 }

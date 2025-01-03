@@ -10,12 +10,18 @@ import java.util.List;
  * Класс для представления кошелька.
  * Связан с пользователем через поле userId.
  * Хранит информацию о названии, балансе и транзакциях.
+ * <p>
+ * Поля:
+ * - {@code String userId} — идентификатор пользователя, которому принадлежит кошелёк.
+ * - {@code String name} — название кошелька.
+ * - {@code double balance} — текущий баланс кошелька.
+ * - {@link List}<{@link Transaction}> transactions — список транзакций, связанных с кошельком.
  */
 public class Wallet {
-    private String userId; // Идентификатор пользователя, которому принадлежит кошелёк
-    private String name;   // Название кошелька
-    private double balance; // Баланс кошелька
-    private List<Transaction> transactions; // Список транзакций по кошельку
+    private String userId;
+    private String name;
+    private double balance;
+    private List<Transaction> transactions;
 
     /**
      * Конструктор для десериализации Jackson.

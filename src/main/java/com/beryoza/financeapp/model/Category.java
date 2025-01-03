@@ -6,11 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Класс для представления категории транзакций.
  * Лимит бюджета можно задавать для контроля расходов/доходов.
+ * <p>
+ * Поля:
+ * - {@code String userId} — идентификатор пользователя, которому принадлежит категория.
+ * - {@code String name} — название категории.
+ * - {@code double budgetLimit} — лимит бюджета для категории.
  */
 public class Category {
-    private String userId;  // Идентификатор пользователя
-    private String name;    // Название категории
-    private double budgetLimit; // Лимит бюджета
+    private String userId;
+    private String name;
+    private double budgetLimit;
 
     /**
      * Конструктор для десериализации Jackson.

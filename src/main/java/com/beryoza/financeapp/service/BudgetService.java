@@ -13,6 +13,10 @@ import java.util.*;
 /**
  * Сервис для управления категориями и бюджетами.
  * Обеспечивает работу с категориями, их лимитами и подсчётом состояния бюджета.
+ * <p>
+ * Поля:
+ * - {@link WalletRepository} walletRepository — репозиторий для работы с кошельками.
+ * - {@link CategoryRepository} categoryRepository — репозиторий для работы с категориями.
  */
 public class BudgetService {
     private final WalletRepository walletRepository;
@@ -188,23 +192,18 @@ public class BudgetService {
      * @return Список предупреждений для категорий, где превышен лимит бюджета.
      */
     public List<String> checkBudgetLimits(User user) {
-        // Загружаем категории пользователя
         List<Category> categories = categoryRepository.findCategoriesByUserId(user.getUsername());
 
-        // Подсчитываем расходы по категориям
         Map<String, Double> expensesByCategory = calculateExpensesByCategory(user);
 
-        // Список предупреждений о превышении лимита
         List<String> warnings = new ArrayList<>();
         for (Category category : categories) {
-            // Получаем сумму расходов для категории
             double expenses = Math.abs(expensesByCategory.getOrDefault(category.getName(), 0.0));
-            // Проверяем превышение лимита
             if (expenses > category.getBudgetLimit()) {
                 warnings.add("Лимит превышен для категории: " + category.getName());
             }
         }
-        return warnings; // Возвращаем список предупреждений
+        return warnings;
     }
 
     /**
@@ -217,14 +216,12 @@ public class BudgetService {
         Map<String, Double> expensesByCategory = new HashMap<>();
         List<Transaction> transactions = new ArrayList<>();
 
-        // Собираем все транзакции пользователя
         for (Wallet wallet : walletRepository.loadWalletsByUser(user.getUsername())) {
             transactions.addAll(wallet.getTransactions());
         }
 
-        // Группируем расходы по категориям
         for (Transaction transaction : transactions) {
-            if (transaction.getAmount() < 0) { // Только расходы
+            if (transaction.getAmount() < 0) {
                 String categoryName = transaction.getCategory().getName();
                 expensesByCategory.put(categoryName,
                         expensesByCategory.getOrDefault(categoryName, 0.0) + transaction.getAmount());
@@ -232,5 +229,4 @@ public class BudgetService {
         }
         return expensesByCategory;
     }
-
 }

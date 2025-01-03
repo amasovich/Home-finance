@@ -9,11 +9,17 @@ import java.util.Scanner;
 
 /**
  * Контроллер для управления кошельками пользователя.
+ * <p>
+ * Поля:
+ * - {@link WalletService} walletService — сервис для работы с кошельками и транзакциями.
+ * - {@link UserService} userService — сервис для работы с пользователями.
+ * - {@link User} user — текущий авторизованный пользователь.
+ * - {@link Scanner} scanner — сканер для чтения пользовательского ввода.
  */
 public class WalletController {
     private final WalletService walletService;
     private final UserService userService;
-    private final User user; // Текущий авторизованный пользователь
+    private final User user;
     private final Scanner scanner;
 
     /**
@@ -26,7 +32,7 @@ public class WalletController {
      */
     public WalletController(WalletService walletService, UserService userService, User user, Scanner scanner) {
         this.walletService = walletService;
-        this.userService = userService; // Инициализация UserService
+        this.userService = userService;
         this.user = user;
         this.scanner = scanner;
     }
@@ -186,21 +192,18 @@ public class WalletController {
             System.out.print("Введите сумму перевода: ");
             String amountInput = scanner.nextLine();
 
-            // Проверка валидности суммы перевода
             if (!DataValidator.isNumeric(amountInput) || !DataValidator.isPositiveNumber(amountInput)) {
                 System.out.println("Ошибка: Введите положительное число для суммы.");
                 return;
             }
             double amount = Double.parseDouble(amountInput);
 
-            // Ищем пользователя-получателя
             User receiverUser = userService.findUserByUsername(receiverUsername);
             if (receiverUser == null) {
                 System.out.println("Ошибка: Пользователь с логином \"" + receiverUsername + "\" не найден.");
                 return;
             }
 
-            // Выполняем перевод
             walletService.transferFunds(user, senderWallet, receiverUser, receiverWallet, amount);
         } catch (Exception e) {
             System.out.println("Ошибка при переводе средств: " + e.getMessage());

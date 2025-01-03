@@ -12,14 +12,26 @@ import java.util.List;
 /**
  * Базовый репозиторий для работы с файлами.
  * Предоставляет методы для сохранения и загрузки данных.
+ * <p>
+ * Поля:
+ * - {@link ObjectMapper} objectMapper — объект для преобразования данных в JSON и обратно.
  */
 public abstract class FileRepository {
     protected final ObjectMapper objectMapper;
 
+    /**
+     * Конструктор базового репозитория.
+     * Инициализирует {@link ObjectMapper} с поддержкой модуля для работы с {@link java.time.LocalDate}
+     * и включает форматированный вывод JSON (читаемый для человека).
+     * <p>
+     * Настройки:
+     * - {@link JavaTimeModule} — для сериализации/десериализации типов даты и времени.
+     * - {@link SerializationFeature#INDENT_OUTPUT} — для форматированного (многострочного) вывода JSON.
+     */
     public FileRepository() {
         objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // Регистрация модуля для LocalDate
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT); // Включаем форматированный вывод
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
     }
 
@@ -53,7 +65,7 @@ public abstract class FileRepository {
     protected <T> List<T> loadDataFromFile(String filePath, Class<T> type) throws IOException {
         File file = new File(filePath);
         if (!file.exists() || file.length() == 0) {
-            return new ArrayList<>(); // Если файл отсутствует или пустой, возвращаем пустой список
+            return new ArrayList<>();
         }
         return objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, type));
     }

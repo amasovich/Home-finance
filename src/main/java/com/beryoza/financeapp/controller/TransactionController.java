@@ -9,6 +9,12 @@ import java.util.Scanner;
 
 /**
  * Контроллер для управления транзакциями.
+ * <p>
+ * Поля:
+ * - {@link WalletService} walletService — сервис для работы с кошельками и транзакциями.
+ * - {@link BudgetService} budgetService — сервис для работы с бюджетами.
+ * - {@link User} user — текущий авторизованный пользователь.
+ * - {@link Scanner} scanner — сканер для чтения пользовательского ввода.
  */
 public class TransactionController {
     private final WalletService walletService;
@@ -26,7 +32,7 @@ public class TransactionController {
      */
     public TransactionController(WalletService walletService, BudgetService budgetService, User user, Scanner scanner) {
         this.walletService = walletService;
-        this.budgetService = budgetService; // Инициализация BudgetService
+        this.budgetService = budgetService;
         this.user = user;
         this.scanner = scanner;
     }
@@ -80,14 +86,12 @@ public class TransactionController {
 
             walletService.addTransaction(user, walletName, amount, categoryName, isIncome);
 
-            // Проверяем лимиты бюджета
             List<String> warnings = budgetService.checkBudgetLimits(user);
             if (!warnings.isEmpty()) {
                 System.out.println("Предупреждения:");
                 warnings.forEach(System.out::println);
             }
 
-            // Проверяем превышение расходов над доходами
             String expenseWarning = walletService.checkExpenseExceedsIncome(user);
             if (!expenseWarning.isEmpty()) {
                 System.out.println(expenseWarning);
@@ -150,14 +154,12 @@ public class TransactionController {
 
             walletService.editTransaction(user, walletName, transactionId, newAmount, newCategory, newDateStr);
 
-            // Проверяем лимиты бюджета после редактирования
             List<String> warnings = budgetService.checkBudgetLimits(user);
             if (!warnings.isEmpty()) {
                 System.out.println("Предупреждения:");
                 warnings.forEach(System.out::println);
             }
 
-            // Проверяем превышение расходов над доходами
             String expenseWarning = walletService.checkExpenseExceedsIncome(user);
             if (!expenseWarning.isEmpty()) {
                 System.out.println(expenseWarning);

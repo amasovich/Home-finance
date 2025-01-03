@@ -14,6 +14,12 @@ import java.util.*;
 
 /**
  * Сервис для управления кошельками и транзакциями.
+ * Предоставляет функциональность для работы с кошельками, их балансами, транзакциями,
+ * а также взаимодействие с категориями транзакций.
+ * <p>
+ * Поля:
+ * - {@link WalletRepository} walletRepository — репозиторий для работы с кошельками и транзакциями.
+ * - {@link CategoryRepository} categoryRepository — репозиторий для работы с категориями транзакций.
  */
 public class WalletService {
     private final WalletRepository walletRepository;
@@ -22,7 +28,8 @@ public class WalletService {
     /**
      * Конструктор для инициализации WalletService.
      *
-     * @param walletRepository Репозиторий для работы с кошельками и транзакциями.
+     * @param walletRepository   Репозиторий для работы с кошельками и транзакциями.
+     * @param categoryRepository Репозиторий для работы с категориями транзакций.
      */
     public WalletService(WalletRepository walletRepository, CategoryRepository categoryRepository) {
         this.walletRepository = walletRepository;
@@ -60,10 +67,8 @@ public class WalletService {
         try {
             validateWalletName(walletName);
 
-            // Загружаем кошельки пользователя
             List<Wallet> userWallets = walletRepository.loadWalletsByUser(user.getUsername());
 
-            // Ищем кошелёк для удаления
             Wallet walletToRemove = null;
             for (Wallet wallet : userWallets) {
                 if (wallet.getName().equals(walletName)) {
@@ -76,7 +81,6 @@ public class WalletService {
                 throw new IllegalArgumentException("Кошелёк с таким названием не найден.");
             }
 
-            // Удаляем кошелёк
             userWallets.remove(walletToRemove);
             walletRepository.saveWallets(userWallets);
 
@@ -97,15 +101,18 @@ public class WalletService {
         validateWalletName(newName);
         List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
         Wallet walletToRename = null;
+
         for (Wallet wallet : wallets) {
             if (wallet.getName().equals(currentName)) {
                 walletToRename = wallet;
                 break;
             }
         }
+
         if (walletToRename == null) {
             throw new IllegalArgumentException("Кошелёк с названием \"" + currentName + "\" не найден.");
         }
+
         walletToRename.setName(newName);
         walletRepository.saveWallets(wallets);
     }
@@ -120,6 +127,7 @@ public class WalletService {
     public void updateWalletBalance(User user, String walletName, double newBalance) {
         validateBalance(newBalance);
         List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+
         for (Wallet wallet : wallets) {
             if (wallet.getName().equals(walletName)) {
                 wallet.setBalance(newBalance);
@@ -141,12 +149,10 @@ public class WalletService {
      * @param amount        Сумма перевода.
      */
     public void transferFunds(User senderUser, String senderWallet, User receiverUser, String receiverWallet, double amount) {
-        // Проверяем, что сумма положительная
         if (!DataValidator.isPositiveNumber(String.valueOf(amount))) {
             throw new IllegalArgumentException("Сумма перевода должна быть положительной.");
         }
 
-        // Загружаем кошельки отправителя и получателя
         Wallet sender = null, receiver = null;
         List<Wallet> senderWallets = walletRepository.loadWalletsByUser(senderUser.getUsername());
         for (Wallet wallet : senderWallets) {
@@ -164,24 +170,18 @@ public class WalletService {
             }
         }
 
-        // Проверяем, что кошельки найдены
         if (sender == null) {
             throw new IllegalArgumentException("Кошелек отправителя \"" + senderWallet + "\" не найден.");
         }
         if (receiver == null) {
             throw new IllegalArgumentException("Кошелек получателя \"" + receiverWallet + "\" не найден.");
         }
-
-        // Проверяем баланс отправителя
         if (sender.getBalance() < amount) {
             throw new IllegalArgumentException("Недостаточно средств на кошельке отправителя.");
         }
 
-        // Выполняем перевод
         sender.setBalance(sender.getBalance() - amount);
         receiver.setBalance(receiver.getBalance() + amount);
-
-        // Сохраняем изменения
         walletRepository.saveWallet(sender);
         walletRepository.saveWallet(receiver);
 
@@ -228,8 +228,7 @@ public class WalletService {
      * @param balance Баланс кошелька.
      */
     private void validateBalance(double balance) {
-        if (!DataValidator.isPositiveNumber(String.valueOf(balance)) ||
-                !DataValidator.isNumberInRange(balance, 1, 100_000_000)) {
+        if (!DataValidator.isPositiveNumber(String.valueOf(balance)) || !DataValidator.isNumberInRange(balance, 1, 100_000_000)) {
             throw new IllegalArgumentException("Некорректный баланс.");
         }
     }
@@ -296,7 +295,6 @@ public class WalletService {
         double totalIncome = 0;
         double totalExpenses = 0;
 
-        // Подсчитываем доходы и расходы по всем кошелькам
         List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
         for (Wallet wallet : wallets) {
             for (Transaction transaction : wallet.getTransactions()) {
@@ -308,11 +306,10 @@ public class WalletService {
             }
         }
 
-        // Проверяем, превышают ли расходы доходы
         if (Math.abs(totalExpenses) > totalIncome) {
             return "Предупреждение: Общие расходы превышают доходы!";
         }
-        return ""; // Возвращаем пустую строку, если всё в порядке
+        return "";
     }
 
     /**
@@ -397,7 +394,6 @@ public class WalletService {
      */
     public void editTransaction(User user, String walletName, String transactionId, double newAmount, String newCategoryName, String newDateStr) {
         try {
-            // Проверка формата даты
             if (!DataValidator.isValidDate(newDateStr, "yyyy-MM-dd")) {
                 throw new IllegalArgumentException("Дата \"" + newDateStr + "\" имеет неверный формат. Ожидается формат yyyy-MM-dd.");
             }

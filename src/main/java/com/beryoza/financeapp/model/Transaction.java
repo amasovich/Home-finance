@@ -9,12 +9,18 @@ import java.util.UUID;
 /**
  * Финансовая транзакция. Например, покупка продуктов или получение зарплаты.
  * Хранит информацию о сумме, категории и дате операции.
+ * <p>
+ * Поля:
+ * - {@code String id} — уникальный идентификатор транзакции.
+ * - {@code double amount} — сумма транзакции (положительная для доходов, отрицательная для расходов).
+ * - {@link Category} category — категория, к которой относится транзакция.
+ * - {@link LocalDate} date — дата совершения транзакции.
  */
 public class Transaction {
-    private final String id; // Уникальный идентификатор
-    private double amount;   // Сумма транзакции
-    private Category category; // Категория транзакции
-    private LocalDate date;  // Дата транзакции
+    private final String id;
+    private double amount;
+    private Category category;
+    private LocalDate date;
 
     /**
      * Конструктор для десериализации Jackson.
@@ -29,7 +35,7 @@ public class Transaction {
                        @JsonProperty("amount") double amount,
                        @JsonProperty("category") Category category,
                        @JsonProperty("date") LocalDate date) {
-        this.id = id != null ? id : UUID.randomUUID().toString(); // Генерация идентификатора, если он отсутствует
+        this.id = id != null ? id : UUID.randomUUID().toString();
         this.amount = amount;
         this.category = category;
         this.date = date;

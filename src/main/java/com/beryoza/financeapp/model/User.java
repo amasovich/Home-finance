@@ -7,10 +7,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Класс для представления пользователя.
  * Хранит информацию о логине и пароле.
  * Данные о кошельках пользователя хранятся отдельно.
+ * <p>
+ * Поля:
+ * - {@code String username} — логин пользователя.
+ * - {@code String password} — пароль пользователя.
  */
 public class User {
-    private String username; // Логин пользователя
-    private String password; // Пароль пользователя
+    private String username;
+    private String password;
 
     /**
      * Конструктор для десериализации Jackson.

@@ -13,12 +13,18 @@ import java.util.List;
 /**
  * Сервис для управления пользователями.
  * Обеспечивает регистрацию, авторизацию, изменение данных и выход из системы.
+ * <p>
+ * Поля:
+ * - {@link UserRepository} userRepository — репозиторий для работы с пользователями.
+ * - {@link WalletRepository} walletRepository — репозиторий для работы с кошельками.
+ * - {@link CategoryRepository} categoryRepository — репозиторий для работы с категориями.
+ * - {@link User} currentUser — текущий авторизованный пользователь.
  */
 public class UserService {
-    private final UserRepository userRepository; // Репозиторий для работы с пользователями
-    private final WalletRepository walletRepository; // Репозиторий для работы с кошельками
-    private final CategoryRepository categoryRepository; // Репозиторий для работы с категориями
-    private User currentUser; // Текущий авторизованный пользователь
+    private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
+    private final CategoryRepository categoryRepository;
+    private User currentUser;
 
     /**
      * Конструктор.
@@ -42,7 +48,6 @@ public class UserService {
      */
     public void registerUser(String username, String password) {
         try {
-            // Проверка уникальности
             validateUsername(username);
             validatePassword(password);
 
@@ -52,8 +57,8 @@ public class UserService {
                 throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
             }
 
-            users.add(new User(username, password)); // Добавляем нового пользователя
-            userRepository.saveUsers(users); // Сохраняем полный список
+            users.add(new User(username, password));
+            userRepository.saveUsers(users);
 
             System.out.println("Пользователь успешно зарегистрирован.");
         } catch (IllegalArgumentException e) {
@@ -80,20 +85,18 @@ public class UserService {
      */
     public boolean authenticateUser(String username, String password) {
         try {
-            // Проверяем формат логина и пароля
             validateUsername(username);
             validatePassword(password);
 
-            // Ищем пользователя по логину
             User user = findUserByUsername(username);
+
             if (user == null) {
                 System.out.println("Ошибка: Пользователь с логином '" + username + "' не найден.");
                 return false;
             }
 
-            // Проверяем пароль
             if (user.getPassword().equals(password)) {
-                currentUser = user; // Устанавливаем текущего пользователя
+                currentUser = user;
                 System.out.println("Добро пожаловать, " + user.getUsername() + "!");
                 return true;
             }
@@ -122,7 +125,6 @@ public class UserService {
 
             List<User> users = userRepository.loadUsers();
 
-            // Обновляем пароль текущего пользователя
             for (User user : users) {
                 if (user.getUsername().equals(currentUser.getUsername())) {
                     user.setPassword(newPassword);
@@ -130,10 +132,7 @@ public class UserService {
                 }
             }
 
-            // Сохраняем изменения
             userRepository.saveUsers(users);
-
-            // Обновляем текущего пользователя
             currentUser.setPassword(newPassword);
 
             System.out.println("Пароль успешно изменён.");
@@ -155,14 +154,12 @@ public class UserService {
                 throw new IllegalArgumentException("Пользователь не авторизован.");
             }
 
-            // Проверяем, что логин уникален с помощью findUserByUsername
             if (findUserByUsername(newUsername) != null) {
                 throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
             }
 
             List<User> users = userRepository.loadUsers();
 
-            // Обновляем данные текущего пользователя
             for (User user : users) {
                 if (user.getUsername().equals(currentUser.getUsername())) {
                     user.setUsername(newUsername);
@@ -170,14 +167,9 @@ public class UserService {
                 }
             }
 
-            // Сохраняем изменения в списке пользователей
             userRepository.saveUsers(users);
-
-            // Обновляем связанные данные
             updateWalletsUserId(currentUser.getUsername(), newUsername);
             updateCategoriesUserId(currentUser.getUsername(), newUsername);
-
-            // Обновляем текущего пользователя
             currentUser.setUsername(newUsername);
 
             System.out.println("Логин успешно изменён.");
@@ -194,9 +186,11 @@ public class UserService {
      */
     private void updateWalletsUserId(String oldUserId, String newUserId) {
         List<Wallet> wallets = walletRepository.loadWalletsByUser(oldUserId);
+
         for (Wallet wallet : wallets) {
             wallet.setUserId(newUserId);
         }
+
         walletRepository.saveWallets(wallets);
     }
 
@@ -208,9 +202,11 @@ public class UserService {
      */
     private void updateCategoriesUserId(String oldUserId, String newUserId) {
         List<Category> categories = categoryRepository.findCategoriesByUserId(oldUserId);
+
         for (Category category : categories) {
             category.setUserId(newUserId);
         }
+
         categoryRepository.saveCategories(categories);
     }
 
@@ -229,8 +225,8 @@ public class UserService {
      * @param username Логин для проверки.
      */
     private void validateUsername(String username) {
-        if (!DataValidator.isNonEmptyString(username) || !DataValidator.isStringLengthValid(username, 20) ||
-                !DataValidator.isValidLogin(username)) {
+        if (!DataValidator.isNonEmptyString(username) || !DataValidator.isStringLengthValid(username, 20)
+                || !DataValidator.isValidLogin(username)) {
             throw new IllegalArgumentException("Некорректный логин.");
         }
     }

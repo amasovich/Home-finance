@@ -7,10 +7,15 @@ import java.util.Scanner;
 
 /**
  * Контроллер для управления категориями и бюджетами.
+ * <p>
+ * Поля:
+ * - {@link BudgetService} budgetService — сервис для работы с категориями и бюджетами.
+ * - {@link User} user — текущий авторизованный пользователь.
+ * - {@link Scanner} scanner — сканер для чтения пользовательского ввода.
  */
 public class BudgetController {
     private final BudgetService budgetService;
-    private final User user; // Текущий авторизованный пользователь
+    private final User user;
     private final Scanner scanner;
 
     /**
