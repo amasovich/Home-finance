@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="MVP version 2.3&#10;add README.md">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="MVP version 2.4&#10;edit FileRepository&#10;SerializationFeature.INDENT_OUTPUT">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/categories/categories.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/categories/categories.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/users/users.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/users/users.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wallets/wallets.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/wallets/wallets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/FileRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/FileRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -467,11 +463,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735929609741</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="MVP version 2.4&#10;edit FileRepository&#10;SerializationFeature.INDENT_OUTPUT">
+      <option name="closed" value="true" />
+      <created>1735930128520</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1735930128520</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Budget Controller revision&#10;Adding checks:The category name must be non-empty.The budget limit must be a number &gt;= 0." />
     <MESSAGE value="Updating the Budget Service, adding validation of the category name and budget limit using the DataValidator class" />
     <MESSAGE value="Updating the Wallet Service, adding validation of the wallet name and initial balance using DataValidator" />
     <MESSAGE value="Checking the User Service for user registration and authorization." />
@@ -496,6 +499,7 @@
     <MESSAGE value="MVP version 2.0" />
     <MESSAGE value="MVP version 2.2" />
     <MESSAGE value="MVP version 2.3&#10;add README.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="MVP version 2.3&#10;add README.md" />
+    <MESSAGE value="MVP version 2.4&#10;edit FileRepository&#10;SerializationFeature.INDENT_OUTPUT" />
+    <option name="LAST_COMMIT_MESSAGE" value="MVP version 2.4&#10;edit FileRepository&#10;SerializationFeature.INDENT_OUTPUT" />
   </component>
 </project>
