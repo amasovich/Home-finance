@@ -55,6 +55,28 @@ public class BudgetService {
     }
 
     /**
+     * Метод для переименования категории.
+     *
+     * @param user         Пользователь.
+     * @param currentName  Текущее название категории.
+     * @param newName      Новое название категории.
+     */
+    public void renameCategory(User user, String currentName, String newName) {
+        validateCategoryName(newName);
+
+        List<Category> categories = categoryRepository.findCategoriesByUserId(user.getUsername());
+        for (Category category : categories) {
+            if (category.getName().equals(currentName)) {
+                category.setName(newName);
+                categoryRepository.saveCategories(categories);
+                System.out.println("Категория успешно переименована.");
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Категория с названием \"" + currentName + "\" не найдена.");
+    }
+
+    /**
      * Обновить лимит бюджета для существующей категории.
      *
      * @param user         Пользователь.

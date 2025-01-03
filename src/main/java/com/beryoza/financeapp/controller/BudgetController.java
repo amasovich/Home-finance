@@ -33,19 +33,21 @@ public class BudgetController {
         System.out.println("Управление категориями и бюджетами. Выберите действие:");
         while (true) {
             System.out.println("1. Добавить категорию");
-            System.out.println("2. Обновить лимит категории");
-            System.out.println("3. Просмотреть список категорий");
-            System.out.println("4. Подсчитать состояние бюджета по категориям");
-            System.out.println("5. Вернуться в главное меню");
+            System.out.println("2. Переименовать категорию");
+            System.out.println("3. Обновить лимит категории");
+            System.out.println("4. Просмотреть список категорий");
+            System.out.println("5. Подсчитать состояние бюджета по категориям");
+            System.out.println("6. Вернуться в главное меню");
 
             try {
                 String choice = scanner.nextLine();
                 switch (choice) {
                     case "1" -> addCategory();
-                    case "2" -> updateBudgetLimit();
-                    case "3" -> listCategories();
-                    case "4" -> calculateBudgetState();
-                    case "5" -> {
+                    case "2" -> renameCategory();
+                    case "3" -> updateBudgetLimit();
+                    case "4" -> listCategories();
+                    case "5" -> calculateBudgetState();
+                    case "6" -> {
                         System.out.println("Выход в главное меню.");
                         return;
                     }
@@ -73,6 +75,23 @@ public class BudgetController {
             System.out.println("Ошибка: Введите корректное число для лимита бюджета.");
         } catch (Exception e) {
             System.out.println("Ошибка при добавлении категории: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Метод для переименования категории.
+     */
+    private void renameCategory() {
+        try {
+            System.out.print("Введите текущее название категории: ");
+            String currentName = scanner.nextLine();
+            System.out.print("Введите новое название категории: ");
+            String newName = scanner.nextLine();
+
+            budgetService.renameCategory(user, currentName, newName);
+            System.out.println("Категория успешно переименована.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при переименовании категории: " + e.getMessage());
         }
     }
 

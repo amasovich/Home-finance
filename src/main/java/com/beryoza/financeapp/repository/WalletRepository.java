@@ -1,6 +1,5 @@
 package com.beryoza.financeapp.repository;
 
-import com.beryoza.financeapp.model.Transaction;
 import com.beryoza.financeapp.model.Wallet;
 
 import java.io.File;

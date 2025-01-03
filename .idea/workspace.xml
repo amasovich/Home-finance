@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="MVP version 1.2">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="MVP version 1.21&#10;update WalletService">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/WalletController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/BudgetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/BudgetController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/WalletRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/WalletRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -409,11 +410,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735921565540</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="MVP version 1.21&#10;update WalletService">
+      <option name="closed" value="true" />
+      <created>1735921996738</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1735921996738</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update class TransactionController / Add calculateByCategories &amp; findWalletByName methods" />
     <MESSAGE value="Update class BudgetController / Add calculateBudgetState method" />
     <MESSAGE value="Adding a prepared DataValidator" />
     <MESSAGE value="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format." />
@@ -438,6 +446,7 @@
     <MESSAGE value="Refactoring all classes" />
     <MESSAGE value="MVP version 1.1" />
     <MESSAGE value="MVP version 1.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="MVP version 1.2" />
+    <MESSAGE value="MVP version 1.21&#10;update WalletService" />
+    <option name="LAST_COMMIT_MESSAGE" value="MVP version 1.21&#10;update WalletService" />
   </component>
 </project>
