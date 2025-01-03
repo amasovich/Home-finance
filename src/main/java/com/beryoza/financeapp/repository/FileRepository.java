@@ -23,7 +23,13 @@ public abstract class FileRepository {
      * @throws IOException Если произошла ошибка при записи.
      */
     protected <T> void saveDataToFile(String filePath, List<T> data) throws IOException {
-        objectMapper.writeValue(new File(filePath), data);
+        try {
+            objectMapper.writeValue(new File(filePath), data);
+            System.out.println("Данные успешно сохранены в " + filePath);
+        } catch (IOException e) {
+            System.err.println("Ошибка при сохранении данных в " + filePath + ": " + e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -37,8 +43,8 @@ public abstract class FileRepository {
      */
     protected <T> List<T> loadDataFromFile(String filePath, Class<T> type) throws IOException {
         File file = new File(filePath);
-        if (!file.exists()) {
-            return new ArrayList<>(); // Если файла нет, возвращаем пустой список
+        if (!file.exists() || file.length() == 0) {
+            return new ArrayList<>(); // Если файл отсутствует или пустой, возвращаем пустой список
         }
         return objectMapper.readValue(file, objectMapper.getTypeFactory().constructCollectionType(List.class, type));
     }

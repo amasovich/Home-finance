@@ -49,7 +49,7 @@ public class TransactionController {
                 case "5" -> editTransaction();
                 case "6" -> calculateByCategories();
                 case "7" -> {
-                    System.out.println("Возвращаемся в главное меню.");
+                    System.out.println("Выход в главное меню.");
                     return;
                 }
                 default -> System.out.println("Неверный выбор. Попробуйте снова.");

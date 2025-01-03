@@ -45,7 +45,7 @@ public class BudgetController {
                 case "3" -> listCategories();
                 case "4" -> calculateBudgetState();
                 case "5" -> {
-                    System.out.println("Возвращаемся в главное меню.");
+                    System.out.println("Выход в главное меню.");
                     return;
                 }
                 default -> System.out.println("Неверный выбор. Попробуйте снова.");

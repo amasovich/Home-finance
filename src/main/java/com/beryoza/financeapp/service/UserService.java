@@ -15,9 +15,11 @@ public class UserService {
     // Список всех зарегистрированных пользователей
     private final List<User> users;
 
-    // Поле для работы с репозиторием пользователей
+    // Репозиторий для работы с пользователями
     private final UserRepository userRepository;
 
+    // Текущий авторизованный пользователь
+    private User currentUser;
     /**
      * Конструктор. Инициализируем репозиторий и загружаем пользователей.
      *
@@ -86,8 +88,9 @@ public class UserService {
      *
      * @param username Логин пользователя.
      * @param password Пароль пользователя.
+     * @return true, если авторизация успешна; иначе false.
      */
-    public void authenticateUser(String username, String password) {
+    public boolean authenticateUser(String username, String password) {
         try {
             // Проверка, что логин не пустой
             if (!DataValidator.isNonEmptyString(username)) {
@@ -105,24 +108,39 @@ public class UserService {
             }
 
             // Поиск пользователя по логину и паролю
-            User user = null;
             for (User u : users) {
                 if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                    user = u;
-                    break;
+                    currentUser = u; // Устанавливаем текущего пользователя
+                    System.out.println("Добро пожаловать, " + u.getUsername() + "!");
+                    return true;
                 }
             }
 
-            if (user != null) {
-                System.out.println("Добро пожаловать, " + user.getUsername() + "!");
-            } else {
-                System.out.println("Ошибка: Неверный логин или пароль.");
-            }
+            System.out.println("Ошибка: Неверный логин или пароль.");
+            return false;
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
+            return false;
         } catch (Exception e) {
             System.out.println("Ошибка при авторизации: " + e.getMessage());
+            return false;
         }
+    }
+
+    /**
+     * Получить текущего авторизованного пользователя.
+     *
+     * @return Текущий пользователь или null, если пользователь не авторизован.
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
+     * Выход из системы. Сбрасывает текущего пользователя.
+     */
+    public void logout() {
+        currentUser = null;
     }
 
     /**

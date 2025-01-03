@@ -47,7 +47,7 @@ public class WalletController {
                 case "4" -> calculateFinances();
                 case "5" -> displayBudgetData();
                 case "6" -> {
-                    System.out.println("Возвращаемся в главное меню.");
+                    System.out.println("Выход в главное меню.");
                     return;
                 }
                 default -> System.out.println("Неверный выбор. Попробуйте снова.");

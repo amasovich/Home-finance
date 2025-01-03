@@ -31,7 +31,7 @@ public class UserController {
             System.out.println("2. Авторизоваться");
             System.out.println("3. Изменить логин");
             System.out.println("4. Изменить пароль");
-            System.out.println("5. Выход");
+            System.out.println("5. Вернуться в главное меню");
 
             String choice = scanner.nextLine();
             switch (choice) {
@@ -40,7 +40,7 @@ public class UserController {
                 case "3" -> changeUsername();
                 case "4" -> changePassword();
                 case "5" -> {
-                    System.out.println("До свидания!");
+                    System.out.println("Выход в главное меню.");
                     return;
                 }
                 default -> System.out.println("Неверный выбор. Попробуйте снова.");

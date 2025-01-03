@@ -126,16 +126,23 @@ public class WalletService {
      * @param user Пользователь.
      */
     public void listWallets(User user) {
-        // Проверяем, есть ли кошельки у пользователя
-        if (user.getWallets().isEmpty()) {
-            System.out.println("У вас нет кошельков.");
-            return;
-        }
+        try {
+            // Загружаем список кошельков пользователя из файла
+            List<Wallet> wallets = walletRepository.loadWallets(user.getUsername());
 
-        // Выводим список кошельков
-        System.out.println("Ваши кошельки:");
-        for (Wallet wallet : user.getWallets()) {
-            System.out.println("- " + wallet.getName() + " (Баланс: " + wallet.getBalance() + ")");
+            // Проверяем, есть ли кошельки у пользователя
+            if (wallets.isEmpty()) {
+                System.out.println("У вас нет кошельков.");
+                return;
+            }
+
+            // Выводим список кошельков
+            System.out.println("Ваши кошельки:");
+            for (Wallet wallet : wallets) {
+                System.out.println("- " + wallet.getName() + " (Баланс: " + wallet.getBalance() + ")");
+            }
+        } catch (Exception e) {
+            System.out.println("Ошибка при загрузке кошельков: " + e.getMessage());
         }
     }
 

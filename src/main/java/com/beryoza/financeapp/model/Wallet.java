@@ -4,28 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Кошелёк пользователя. Хранит информацию о названии, балансе и транзакциях.
+ * Класс для представления кошелька.
+ * Связан с пользователем через поле userId.
+ * Хранит информацию о названии, балансе и транзакциях.
  */
 public class Wallet {
-    // Название кошелька, например, "Наличные" или "Карта Сбербанка"
-    private String name;
-
-    // Текущий баланс кошелька
-    private double balance;
-
-    // Список всех транзакций по этому кошельку
-    private List<Transaction> transactions;
+    private String userId; // Идентификатор пользователя, которому принадлежит кошелёк
+    private String name; // Название кошелька
+    private double balance; // Баланс кошелька
+    private List<Transaction> transactions; // Список транзакций по кошельку
 
     /**
-     * Конструктор. Задаём название кошелька и начальный баланс.
+     * Конструктор для создания кошелька.
      *
+     * @param userId  Идентификатор пользователя, которому принадлежит кошелёк.
      * @param name    Название кошелька.
-     * @param balance Начальный баланс.
+     * @param balance Начальный баланс кошелька.
      */
-    public Wallet(String name, double balance) {
+    public Wallet(String userId, String name, double balance) {
+        this.userId = userId;
         this.name = name;
         this.balance = balance;
-        this.transactions = new ArrayList<>(); // Начинаем с пустого списка транзакций
+        this.transactions = new ArrayList<>();
+    }
+
+    /**
+     * Получить идентификатор пользователя.
+     *
+     * @return Идентификатор пользователя.
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * Установить идентификатор пользователя.
+     *
+     * @param userId Идентификатор пользователя.
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     /**
@@ -38,12 +56,10 @@ public class Wallet {
     }
 
     /**
-     * Установить новое название кошелька.
-     * Резервный метод. Может быть полезен для редактирования названия.
+     * Установить название кошелька.
      *
-     * @param name Новое название кошелька.
+     * @param name Название кошелька.
      */
-    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
@@ -59,17 +75,15 @@ public class Wallet {
 
     /**
      * Установить новый баланс кошелька.
-     * Резервный метод. Может быть полезен для корректировок.
      *
      * @param balance Новый баланс кошелька.
      */
-    @Deprecated
     public void setBalance(double balance) {
         this.balance = balance;
     }
 
     /**
-     * Получить список всех транзакций по кошельку.
+     * Получить список транзакций по кошельку.
      *
      * @return Список транзакций.
      */
@@ -79,40 +93,38 @@ public class Wallet {
 
     /**
      * Установить новый список транзакций.
-     * Резервный метод. Может быть полезен для массового обновления транзакций.
      *
      * @param transactions Новый список транзакций.
      */
-    @Deprecated
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
 
     /**
-     * Добавить транзакцию в список и обновить баланс кошелька.
+     * Добавить транзакцию в кошелёк и обновить баланс.
      *
-     * @param transaction Транзакция, которую нужно добавить.
+     * @param transaction Транзакция для добавления.
      */
     public void addTransaction(Transaction transaction) {
-        this.transactions.add(transaction);
-        this.balance += transaction.getAmount(); // Обновляем баланс
+        transactions.add(transaction);
+        balance += transaction.getAmount();
     }
 
     /**
-     * Удалить транзакцию из списка и скорректировать баланс кошелька.
+     * Удалить транзакцию из кошелька и скорректировать баланс.
      *
-     * @param transaction Транзакция, которую нужно удалить.
+     * @param transaction Транзакция для удаления.
      */
     public void removeTransaction(Transaction transaction) {
-        if (this.transactions.remove(transaction)) {
-            this.balance -= transaction.getAmount(); // Корректируем баланс
+        if (transactions.remove(transaction)) {
+            balance -= transaction.getAmount();
         }
     }
 
     /**
      * Найти транзакцию по ID.
      *
-     * @param id ID транзакции.
+     * @param id Идентификатор транзакции.
      * @return Транзакция, если найдена; иначе null.
      */
     public Transaction findTransactionById(String id) {
@@ -121,20 +133,21 @@ public class Wallet {
                 return transaction;
             }
         }
-        return null; // Если транзакция с указанным ID не найдена
+        return null;
     }
 
     /**
-     * Вывести строковое представление кошелька: название, баланс и количество операций.
+     * Получить строковое представление кошелька.
      *
      * @return Информация о кошельке в текстовом формате.
      */
     @Override
     public String toString() {
         return "Wallet{" +
-                "name='" + name + '\'' +
+                "userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
                 ", balance=" + balance +
-                ", transactionsCount=" + transactions.size() +
+                ", transactions=" + transactions.size() +
                 '}';
     }
 }

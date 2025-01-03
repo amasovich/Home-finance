@@ -5,8 +5,8 @@ import com.beryoza.financeapp.model.Wallet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Репозиторий для работы с данными кошельков и транзакций.
@@ -73,12 +73,32 @@ public class WalletRepository extends FileRepository {
      * @param userId ID пользователя.
      */
     public void saveTransactions(Wallet wallet, String userId) {
+        String filePath = String.format(FILE_PATH_TEMPLATE, userId);
         try {
-            List<Wallet> wallets = loadWallets(userId);
-            wallets = wallets.stream()
-                    .map(w -> w.getName().equals(wallet.getName()) ? wallet : w)
-                    .collect(Collectors.toList());
-            saveWallets(wallets, userId);
+            // Загружаем текущий список кошельков напрямую из файла
+            List<Wallet> wallets = loadDataFromFile(filePath, Wallet.class);
+
+            // Флаг для проверки, найден ли кошелёк
+            boolean walletFound = false;
+
+            // Обновляем существующий кошелёк
+            for (int i = 0; i < wallets.size(); i++) {
+                if (wallets.get(i).getName().equals(wallet.getName())) {
+                    wallets.set(i, wallet); // Обновляем существующий кошелёк
+                    walletFound = true;
+                    break;
+                }
+            }
+
+            // Если кошелёк не найден, выбрасываем исключение
+            if (!walletFound) {
+                throw new IllegalArgumentException("Кошелёк с именем \"" + wallet.getName() + "\" не найден.");
+            }
+
+            // Сохраняем обновлённый список обратно в файл
+            saveDataToFile(filePath, wallets);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Ошибка: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Ошибка при сохранении транзакций для кошелька \"" + wallet.getName() + "\": " + e.getMessage());
         }
@@ -92,15 +112,18 @@ public class WalletRepository extends FileRepository {
      * @return Список транзакций.
      */
     public List<Transaction> loadTransactions(String walletName, String userId) {
+        String filePath = String.format(FILE_PATH_TEMPLATE, userId);
         try {
-            List<Wallet> wallets = loadWallets(userId);
-            return wallets.stream()
-                    .filter(wallet -> wallet.getName().equals(walletName))
-                    .flatMap(wallet -> wallet.getTransactions().stream())
-                    .collect(Collectors.toList());
+            List<Wallet> wallets = loadDataFromFile(filePath, Wallet.class);
+            for (Wallet wallet : wallets) {
+                if (wallet.getName().equals(walletName)) {
+                    return wallet.getTransactions();
+                }
+            }
+            return new ArrayList<>(); // Если кошелёк не найден
         } catch (Exception e) {
             System.err.println("Ошибка при загрузке транзакций для кошелька \"" + walletName + "\": " + e.getMessage());
-            return List.of();
+            return new ArrayList<>();
         }
     }
 }

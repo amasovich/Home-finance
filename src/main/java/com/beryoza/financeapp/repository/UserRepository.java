@@ -3,6 +3,7 @@ package com.beryoza.financeapp.repository;
 import com.beryoza.financeapp.model.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 
@@ -20,6 +21,7 @@ public class UserRepository extends FileRepository {
      */
     public UserRepository() {
         ensureDirectoriesExist();
+        ensureFileExists();
     }
 
     /**
@@ -30,6 +32,18 @@ public class UserRepository extends FileRepository {
         File directory = new File("data/users");
         if (!directory.exists()) {
             directory.mkdirs();
+        }
+    }
+
+    private void ensureFileExists() {
+        File file = new File(FILE_PATH);
+        try {
+            if (!file.exists() || file.length() == 0) {
+                file.createNewFile(); // Создаём файл, если он отсутствует
+                saveUsers(new ArrayList<>()); // Сохраняем пустой список пользователей
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при создании файла: " + e.getMessage());
         }
     }
 
@@ -56,7 +70,7 @@ public class UserRepository extends FileRepository {
             return loadDataFromFile(FILE_PATH, User.class);
         } catch (IOException e) {
             System.err.println("Ошибка при загрузке пользователей: " + e.getMessage());
-            return List.of(); // Возвращаем пустой список при ошибке
+            return new ArrayList<>(); // Возвращаем пустой изменяемый список при ошибке
         }
     }
 }
