@@ -4,11 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="MVP version 1.21&#10;update WalletService">
+    <list default="true" id="17df191b-b538-43cd-82d2-bfba39e454c0" name="Changes" comment="MVP version 1.21&#10;update BudgetService">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/BudgetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/BudgetController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/WalletRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/repository/WalletRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/BudgetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/categories/categories.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/categories/categories.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/wallets/wallets.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/wallets/wallets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/FinanceApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/FinanceApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/controller/TransactionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/beryoza/financeapp/service/WalletService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +46,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -418,11 +421,18 @@
       <option name="project" value="LOCAL" />
       <updated>1735921996738</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="MVP version 1.21&#10;update BudgetService">
+      <option name="closed" value="true" />
+      <created>1735922968052</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1735922968052</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Update class BudgetController / Add calculateBudgetState method" />
     <MESSAGE value="Adding a prepared DataValidator" />
     <MESSAGE value="Updating the UserController&#10;We add checks: On empty lines for login and password. Login and password format." />
     <MESSAGE value="Revision of the Wallet Controller&#10;Adding checks:The wallet name cannot be empty.The balance must be a number and &gt;= 0" />
@@ -447,6 +457,7 @@
     <MESSAGE value="MVP version 1.1" />
     <MESSAGE value="MVP version 1.2" />
     <MESSAGE value="MVP version 1.21&#10;update WalletService" />
-    <option name="LAST_COMMIT_MESSAGE" value="MVP version 1.21&#10;update WalletService" />
+    <MESSAGE value="MVP version 1.21&#10;update BudgetService" />
+    <option name="LAST_COMMIT_MESSAGE" value="MVP version 1.21&#10;update BudgetService" />
   </component>
 </project>

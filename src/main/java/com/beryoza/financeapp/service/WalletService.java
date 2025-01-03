@@ -17,14 +17,16 @@ import java.util.*;
  */
 public class WalletService {
     private final WalletRepository walletRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * Конструктор для инициализации WalletService.
      *
      * @param walletRepository Репозиторий для работы с кошельками и транзакциями.
      */
-    public WalletService(WalletRepository walletRepository) {
+    public WalletService(WalletRepository walletRepository, CategoryRepository categoryRepository) {
         this.walletRepository = walletRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -94,14 +96,18 @@ public class WalletService {
     public void renameWallet(User user, String currentName, String newName) {
         validateWalletName(newName);
         List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        Wallet walletToRename = null;
         for (Wallet wallet : wallets) {
             if (wallet.getName().equals(currentName)) {
-                wallet.setName(newName);
-                walletRepository.saveWallet(wallet);
-                return;
+                walletToRename = wallet;
+                break;
             }
         }
-        throw new IllegalArgumentException("Кошелёк с названием \"" + currentName + "\" не найден.");
+        if (walletToRename == null) {
+            throw new IllegalArgumentException("Кошелёк с названием \"" + currentName + "\" не найден.");
+        }
+        walletToRename.setName(newName);
+        walletRepository.saveWallets(wallets);
     }
 
     /**
@@ -335,32 +341,6 @@ public class WalletService {
             System.out.println("Кошелёк или транзакция не найдены.");
         } catch (Exception e) {
             System.out.println("Ошибка при редактировании транзакции: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Подсчитать доходы и расходы по категориям.
-     *
-     * @param user Пользователь.
-     */
-    public void calculateByCategories(User user) {
-        Map<String, Double> categoryTotals = new HashMap<>();
-        CategoryRepository categoryRepository = new CategoryRepository();
-        List<Category> userCategories = categoryRepository.findCategoriesByUserId(user.getUsername());
-
-        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
-        for (Wallet wallet : wallets) {
-            for (Transaction transaction : wallet.getTransactions()) {
-                String categoryName = transaction.getCategory().getName();
-                if (userCategories.stream().anyMatch(c -> c.getName().equals(categoryName))) {
-                    categoryTotals.put(categoryName, categoryTotals.getOrDefault(categoryName, 0.0) + transaction.getAmount());
-                }
-            }
-        }
-
-        System.out.println("Доходы и расходы по категориям:");
-        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
-            System.out.println("- " + entry.getKey() + ": " + entry.getValue());
         }
     }
 

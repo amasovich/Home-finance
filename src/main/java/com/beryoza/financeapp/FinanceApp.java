@@ -30,7 +30,7 @@ public class FinanceApp {
 
         // Инициализация сервисов
         UserService userService = new UserService(userRepository, walletRepository, categoryRepository);
-        WalletService walletService = new WalletService(walletRepository);
+        WalletService walletService = new WalletService(walletRepository, categoryRepository);
         BudgetService budgetService = new BudgetService(walletRepository, categoryRepository);
 
         // Инициализация контроллеров

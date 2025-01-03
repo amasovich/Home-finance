@@ -37,8 +37,7 @@ public class TransactionController {
             System.out.println("3. Просмотреть транзакции");
             System.out.println("4. Удалить транзакцию");
             System.out.println("5. Редактировать транзакцию");
-            System.out.println("6. Подсчитать по категориям");
-            System.out.println("7. Вернуться в главное меню");
+            System.out.println("6. Вернуться в главное меню");
 
             try {
                 String choice = scanner.nextLine();
@@ -48,8 +47,7 @@ public class TransactionController {
                     case "3" -> listTransactions();
                     case "4" -> deleteTransaction();
                     case "5" -> editTransaction();
-                    case "6" -> calculateByCategories();
-                    case "7" -> {
+                    case "6" -> {
                         System.out.println("Выход в главное меню.");
                         return;
                     }
@@ -137,17 +135,6 @@ public class TransactionController {
             System.out.println("Ошибка: Введите корректное число для суммы.");
         } catch (Exception e) {
             System.out.println("Ошибка при редактировании транзакции: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Метод для подсчёта транзакций по категориям.
-     */
-    private void calculateByCategories() {
-        try {
-            walletService.calculateByCategories(user);
-        } catch (Exception e) {
-            System.out.println("Ошибка при подсчёте по категориям: " + e.getMessage());
         }
     }
 }

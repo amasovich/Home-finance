@@ -80,17 +80,25 @@ public class UserService {
      */
     public boolean authenticateUser(String username, String password) {
         try {
-            validateUsername(username); // Проверка логина
-            validatePassword(password); // Проверка пароля
+            // Проверяем формат логина и пароля
+            validateUsername(username);
+            validatePassword(password);
 
-            User user = userRepository.findUserByUsername(username);
-            if (user != null && user.getPassword().equals(password)) {
+            // Ищем пользователя по логину
+            User user = findUserByUsername(username);
+            if (user == null) {
+                System.out.println("Ошибка: Пользователь с логином '" + username + "' не найден.");
+                return false;
+            }
+
+            // Проверяем пароль
+            if (user.getPassword().equals(password)) {
                 currentUser = user; // Устанавливаем текущего пользователя
                 System.out.println("Добро пожаловать, " + user.getUsername() + "!");
                 return true;
             }
 
-            System.out.println("Ошибка: Неверный логин или пароль.");
+            System.out.println("Ошибка: Неверный пароль.");
             return false;
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
@@ -147,12 +155,12 @@ public class UserService {
                 throw new IllegalArgumentException("Пользователь не авторизован.");
             }
 
-            List<User> users = userRepository.loadUsers();
-
-            // Проверяем, что логин уникален
-            if (users.stream().anyMatch(user -> user.getUsername().equals(newUsername))) {
+            // Проверяем, что логин уникален с помощью findUserByUsername
+            if (findUserByUsername(newUsername) != null) {
                 throw new IllegalArgumentException("Пользователь с таким логином уже существует.");
             }
+
+            List<User> users = userRepository.loadUsers();
 
             // Обновляем данные текущего пользователя
             for (User user : users) {
