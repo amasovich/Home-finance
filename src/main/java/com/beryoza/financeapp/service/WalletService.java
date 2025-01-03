@@ -85,6 +85,47 @@ public class WalletService {
     }
 
     /**
+     * Метод для переименования кошелька.
+     *
+     * @param user         Пользователь.
+     * @param currentName  Текущее название кошелька.
+     * @param newName      Новое название кошелька.
+     */
+    public void renameWallet(User user, String currentName, String newName) {
+        validateWalletName(newName);
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
+            if (wallet.getName().equals(currentName)) {
+                wallet.setName(newName);
+                walletRepository.saveWallet(wallet);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Кошелёк с названием \"" + currentName + "\" не найден.");
+    }
+
+    /**
+     * Метод для обновления баланса кошелька.
+     *
+     * @param user         Пользователь.
+     * @param walletName   Название кошелька.
+     * @param newBalance   Новый баланс кошелька.
+     */
+    public void updateWalletBalance(User user, String walletName, double newBalance) {
+        validateBalance(newBalance);
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
+            if (wallet.getName().equals(walletName)) {
+                wallet.setBalance(newBalance);
+                walletRepository.saveWallet(wallet);
+                System.out.println("Баланс кошелька успешно обновлён.");
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Кошелёк с названием \"" + walletName + "\" не найден.");
+    }
+
+    /**
      * Вывести список кошельков пользователя.
      *
      * @param user Пользователь.

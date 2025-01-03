@@ -34,20 +34,24 @@ public class WalletController {
         while (true) {
             System.out.println("1. Добавить кошелёк");
             System.out.println("2. Удалить кошелёк");
-            System.out.println("3. Просмотреть список кошельков");
-            System.out.println("4. Подсчитать доходы и расходы");
-            System.out.println("5. Вывести данные по кошелькам и бюджету");
-            System.out.println("6. Вернуться в главное меню");
+            System.out.println("3. Переименовать кошелёк");
+            System.out.println("4. Обновить баланс кошелка");
+            System.out.println("5. Просмотреть список кошельков");
+            System.out.println("6. Подсчитать доходы и расходы");
+            System.out.println("7. Вывести данные по кошелькам и бюджету");
+            System.out.println("8. Вернуться в главное меню");
 
             try {
                 String choice = scanner.nextLine();
                 switch (choice) {
                     case "1" -> addWallet();
                     case "2" -> removeWallet();
-                    case "3" -> listWallets();
-                    case "4" -> calculateFinances();
-                    case "5" -> displayBudgetData();
-                    case "6" -> {
+                    case "3" -> renameWallet();
+                    case "4" -> updateWalletBalance();
+                    case "5" -> listWallets();
+                    case "6" -> calculateFinances();
+                    case "7" -> displayBudgetData();
+                    case "8" -> {
                         System.out.println("Выход в главное меню.");
                         return;
                     }
@@ -90,6 +94,41 @@ public class WalletController {
             System.out.println("Кошелёк успешно удалён.");
         } catch (Exception e) {
             System.out.println("Ошибка при удалении кошелька: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Метод для переименования кошелька.
+     */
+    private void renameWallet() {
+        try {
+            System.out.print("Введите текущее название кошелька: ");
+            String currentName = scanner.nextLine();
+            System.out.print("Введите новое название кошелька: ");
+            String newName = scanner.nextLine();
+
+            walletService.renameWallet(user, currentName, newName);
+            System.out.println("Название кошелька успешно изменено.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при переименовании кошелька: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Метод для обновления баланса кошелька.
+     */
+    private void updateWalletBalance() {
+        try {
+            System.out.print("Введите название кошелька: ");
+            String walletName = scanner.nextLine();
+            System.out.print("Введите новый баланс: ");
+            double newBalance = Double.parseDouble(scanner.nextLine());
+
+            walletService.updateWalletBalance(user, walletName, newBalance);
+        } catch (NumberFormatException e) {
+            System.out.println("Ошибка: Введите корректное число.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при обновлении баланса: " + e.getMessage());
         }
     }
 
