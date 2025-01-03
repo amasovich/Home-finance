@@ -1,7 +1,9 @@
 package com.beryoza.financeapp.controller;
 
 import com.beryoza.financeapp.model.User;
+import com.beryoza.financeapp.service.UserService;
 import com.beryoza.financeapp.service.WalletService;
+import com.beryoza.financeapp.util.DataValidator;
 
 import java.util.Scanner;
 
@@ -10,6 +12,7 @@ import java.util.Scanner;
  */
 public class WalletController {
     private final WalletService walletService;
+    private final UserService userService;
     private final User user; // Текущий авторизованный пользователь
     private final Scanner scanner;
 
@@ -17,11 +20,13 @@ public class WalletController {
      * Конструктор для инициализации WalletController.
      *
      * @param walletService Сервис для работы с кошельками.
+     * @param userService   Сервис для работы с пользователями.
      * @param user          Авторизованный пользователь.
      * @param scanner       Сканер для чтения пользовательского ввода.
      */
-    public WalletController(WalletService walletService, User user, Scanner scanner) {
+    public WalletController(WalletService walletService, UserService userService, User user, Scanner scanner) {
         this.walletService = walletService;
+        this.userService = userService; // Инициализация UserService
         this.user = user;
         this.scanner = scanner;
     }
@@ -39,7 +44,8 @@ public class WalletController {
             System.out.println("5. Просмотреть список кошельков");
             System.out.println("6. Подсчитать доходы и расходы");
             System.out.println("7. Вывести данные по кошелькам и бюджету");
-            System.out.println("8. Вернуться в главное меню");
+            System.out.println("8. Перевести средства между кошельками");
+            System.out.println("9. Вернуться в главное меню");
 
             try {
                 String choice = scanner.nextLine();
@@ -51,7 +57,8 @@ public class WalletController {
                     case "5" -> listWallets();
                     case "6" -> calculateFinances();
                     case "7" -> displayBudgetData();
-                    case "8" -> {
+                    case "8" -> transferFunds();
+                    case "9" -> {
                         System.out.println("Выход в главное меню.");
                         return;
                     }
@@ -162,6 +169,41 @@ public class WalletController {
             walletService.displayBudgetData(user);
         } catch (Exception e) {
             System.out.println("Ошибка при отображении данных по бюджету: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Метод для перевода средств между кошельками.
+     */
+    private void transferFunds() {
+        try {
+            System.out.print("Введите название вашего кошелька: ");
+            String senderWallet = scanner.nextLine();
+            System.out.print("Введите логин получателя: ");
+            String receiverUsername = scanner.nextLine();
+            System.out.print("Введите название кошелька получателя: ");
+            String receiverWallet = scanner.nextLine();
+            System.out.print("Введите сумму перевода: ");
+            String amountInput = scanner.nextLine();
+
+            // Проверка валидности суммы перевода
+            if (!DataValidator.isNumeric(amountInput) || !DataValidator.isPositiveNumber(amountInput)) {
+                System.out.println("Ошибка: Введите положительное число для суммы.");
+                return;
+            }
+            double amount = Double.parseDouble(amountInput);
+
+            // Ищем пользователя-получателя
+            User receiverUser = userService.findUserByUsername(receiverUsername);
+            if (receiverUser == null) {
+                System.out.println("Ошибка: Пользователь с логином \"" + receiverUsername + "\" не найден.");
+                return;
+            }
+
+            // Выполняем перевод
+            walletService.transferFunds(user, senderWallet, receiverUser, receiverWallet, amount);
+        } catch (Exception e) {
+            System.out.println("Ошибка при переводе средств: " + e.getMessage());
         }
     }
 }

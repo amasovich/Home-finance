@@ -132,6 +132,63 @@ public class WalletService {
     }
 
     /**
+     * Перевод средств между кошельками.
+     *
+     * @param senderUser    Пользователь-отправитель.
+     * @param senderWallet  Название кошелька-отправителя.
+     * @param receiverUser  Пользователь-получатель.
+     * @param receiverWallet Название кошелька-получателя.
+     * @param amount        Сумма перевода.
+     */
+    public void transferFunds(User senderUser, String senderWallet, User receiverUser, String receiverWallet, double amount) {
+        // Проверяем, что сумма положительная
+        if (!DataValidator.isPositiveNumber(String.valueOf(amount))) {
+            throw new IllegalArgumentException("Сумма перевода должна быть положительной.");
+        }
+
+        // Загружаем кошельки отправителя и получателя
+        Wallet sender = null, receiver = null;
+        List<Wallet> senderWallets = walletRepository.loadWalletsByUser(senderUser.getUsername());
+        for (Wallet wallet : senderWallets) {
+            if (wallet.getName().equals(senderWallet)) {
+                sender = wallet;
+                break;
+            }
+        }
+
+        List<Wallet> receiverWallets = walletRepository.loadWalletsByUser(receiverUser.getUsername());
+        for (Wallet wallet : receiverWallets) {
+            if (wallet.getName().equals(receiverWallet)) {
+                receiver = wallet;
+                break;
+            }
+        }
+
+        // Проверяем, что кошельки найдены
+        if (sender == null) {
+            throw new IllegalArgumentException("Кошелек отправителя \"" + senderWallet + "\" не найден.");
+        }
+        if (receiver == null) {
+            throw new IllegalArgumentException("Кошелек получателя \"" + receiverWallet + "\" не найден.");
+        }
+
+        // Проверяем баланс отправителя
+        if (sender.getBalance() < amount) {
+            throw new IllegalArgumentException("Недостаточно средств на кошельке отправителя.");
+        }
+
+        // Выполняем перевод
+        sender.setBalance(sender.getBalance() - amount);
+        receiver.setBalance(receiver.getBalance() + amount);
+
+        // Сохраняем изменения
+        walletRepository.saveWallet(sender);
+        walletRepository.saveWallet(receiver);
+
+        System.out.println("Перевод успешно выполнен: " + amount + " из \"" + senderWallet + "\" в \"" + receiverWallet + "\".");
+    }
+
+    /**
      * Вывести список кошельков пользователя.
      *
      * @param user Пользователь.

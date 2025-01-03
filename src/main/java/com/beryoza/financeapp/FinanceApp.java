@@ -64,7 +64,7 @@ public class FinanceApp {
                         User currentUser = authenticate(scanner, userService);
                         if (currentUser != null) {
                             System.out.println("Авторизация успешна. Добро пожаловать, " + currentUser.getUsername() + "!");
-                            manageUserSession(scanner, currentUser, userController, walletService, budgetService);
+                            manageUserSession(scanner, currentUser, userController, walletService, budgetService, userService);
                         } else {
                             System.out.println("Авторизация не выполнена. Проверьте логин и пароль.");
                         }
@@ -130,8 +130,8 @@ public class FinanceApp {
      * @param budgetService Сервис для работы с бюджетом.
      */
     private static void manageUserSession(Scanner scanner, User currentUser, UserController userController,
-                                          WalletService walletService, BudgetService budgetService) {
-        WalletController walletController = new WalletController(walletService, currentUser, scanner);
+                                          WalletService walletService, BudgetService budgetService, UserService userService) {
+        WalletController walletController = new WalletController(walletService, userService, currentUser, scanner);
         BudgetController budgetController = new BudgetController(budgetService, currentUser, scanner);
         TransactionController transactionController = new TransactionController(walletService, budgetService, currentUser, scanner);
 
