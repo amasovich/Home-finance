@@ -1,5 +1,8 @@
 package com.beryoza.financeapp.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -14,17 +17,33 @@ public class Transaction {
     private LocalDate date;  // Дата транзакции
 
     /**
-     * Конструктор. Создаём новую транзакцию с указанием суммы, категории и даты.
+     * Конструктор для десериализации Jackson.
      *
-     * @param amount    Сумма транзакции. Положительная для доходов, отрицательная для расходов.
-     * @param category  Категория транзакции.
-     * @param date      Дата транзакции.
+     * @param id       Уникальный идентификатор транзакции.
+     * @param amount   Сумма транзакции. Положительная для доходов, отрицательная для расходов.
+     * @param category Категория транзакции.
+     * @param date     Дата транзакции.
      */
-    public Transaction(double amount, Category category, LocalDate date) {
-        this.id = UUID.randomUUID().toString(); // Генерация уникального идентификатора
+    @JsonCreator
+    public Transaction(@JsonProperty("id") String id,
+                       @JsonProperty("amount") double amount,
+                       @JsonProperty("category") Category category,
+                       @JsonProperty("date") LocalDate date) {
+        this.id = id != null ? id : UUID.randomUUID().toString(); // Генерация идентификатора, если он отсутствует
         this.amount = amount;
         this.category = category;
         this.date = date;
+    }
+
+    /**
+     * Конструктор для создания новой транзакции.
+     *
+     * @param amount   Сумма транзакции.
+     * @param category Категория транзакции.
+     * @param date     Дата транзакции.
+     */
+    public Transaction(double amount, Category category, LocalDate date) {
+        this(UUID.randomUUID().toString(), amount, category, date);
     }
 
     /**
@@ -47,7 +66,7 @@ public class Transaction {
 
     /**
      * Установить сумму транзакции.
-     * Резервный метод. Может быть полезен для редактирования транзакции.
+     * Может быть полезно для редактирования транзакции.
      *
      * @param amount Новая сумма транзакции.
      */
@@ -66,7 +85,6 @@ public class Transaction {
 
     /**
      * Установить новую категорию транзакции.
-     * Резервный метод. Может быть полезен для изменения категории.
      *
      * @param category Новая категория транзакции.
      */
@@ -85,7 +103,6 @@ public class Transaction {
 
     /**
      * Установить новую дату транзакции.
-     * Резервный метод. Может быть полезен для корректировки даты.
      *
      * @param date Новая дата транзакции.
      */
@@ -94,7 +111,7 @@ public class Transaction {
     }
 
     /**
-     * Вывод информации о транзакции: сумма, категория, дата.
+     * Строковое представление транзакции: сумма, категория, дата.
      *
      * @return Строковое представление транзакции.
      */

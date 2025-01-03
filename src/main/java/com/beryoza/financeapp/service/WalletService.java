@@ -30,7 +30,7 @@ public class WalletService {
     }
 
     /**
-     * Добавить новый кошелёк.
+     * Добавить новый кошелёк для пользователя.
      *
      * @param user          Пользователь, которому добавляется кошелёк.
      * @param walletName    Название нового кошелька.
@@ -38,85 +38,51 @@ public class WalletService {
      */
     public void addWallet(User user, String walletName, double initialBalance) {
         try {
-            // Проверка допустимости названия кошелька
-            if (walletName == null || walletName.isBlank()) {
-                throw new IllegalArgumentException("Название кошелька не может быть пустым.");
-            }
+            validateWalletName(walletName);
+            validateBalance(initialBalance);
 
-            // Проверка длины названия кошелька
-            if (!DataValidator.isStringLengthValid(walletName, 50)) {
-                throw new IllegalArgumentException("Название кошелька не может быть длиннее 50 символов.");
-            }
+            Wallet newWallet = new Wallet(user.getUsername(), walletName, initialBalance);
 
-            // Проверка, что начальный баланс положительный
-            if (!DataValidator.isPositiveNumber(String.valueOf(initialBalance))) {
-                throw new IllegalArgumentException("Начальный баланс должен быть положительным числом.");
-            }
-
-            // Проверка диапазона начального баланса
-            if (!DataValidator.isNumberInRange(initialBalance, 0, 100_000_000)) {
-                throw new IllegalArgumentException("Начальный баланс должен быть в диапазоне от 0 до 100 000 000.");
-            }
-
-            // Проверка уникальности названия кошелька
-            List<String> existingWalletNames = new ArrayList<>();
-            for (Wallet wallet : user.getWallets()) {
-                existingWalletNames.add(wallet.getName());
-            }
-
-            if (!DataValidator.isUniqueName(walletName, existingWalletNames)) {
-                throw new IllegalArgumentException("Кошелёк с таким названием уже существует.");
-            }
-
-            // Создание нового кошелька
-            Wallet wallet = new Wallet(walletName, initialBalance);
-            user.addWallet(wallet);
-
-            // Сохранение изменений
-            walletRepository.saveWallets(user.getWallets(), user.getUsername());
+            walletRepository.saveWallet(newWallet); // Сохраняем новый кошелёк
             System.out.println("Кошелёк успешно добавлен.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Ошибка при сохранении кошелька: " + e.getMessage());
+            System.out.println("Ошибка при добавлении кошелька: " + e.getMessage());
         }
     }
 
     /**
-     * Удалить кошелёк.
+     * Удалить кошелёк пользователя.
      *
      * @param user       Пользователь.
      * @param walletName Название кошелька для удаления.
      */
     public void removeWallet(User user, String walletName) {
         try {
-            // Проверка, что название кошелька не пустое
-            if (!DataValidator.isNonEmptyString(walletName)) {
-                throw new IllegalArgumentException("Название кошелька не может быть пустым.");
+            validateWalletName(walletName);
+
+            // Загружаем кошельки пользователя
+            List<Wallet> userWallets = walletRepository.loadWalletsByUser(user.getUsername());
+
+            // Ищем кошелёк для удаления
+            Wallet walletToRemove = null;
+            for (Wallet wallet : userWallets) {
+                if (wallet.getName().equals(walletName)) {
+                    walletToRemove = wallet;
+                    break;
+                }
             }
 
-            // Проверка длины названия кошелька
-            if (!DataValidator.isStringLengthValid(walletName, 50)) {
-                throw new IllegalArgumentException("Название кошелька не может быть длиннее 50 символов.");
-            }
-
-            // Поиск кошелька
-            Wallet wallet = user.findWalletByName(walletName);
-
-            if (wallet == null) {
+            if (walletToRemove == null) {
                 throw new IllegalArgumentException("Кошелёк с таким названием не найден.");
             }
 
-            // Удаление кошелька
-            user.removeWallet(wallet);
+            // Удаляем кошелёк
+            userWallets.remove(walletToRemove);
+            walletRepository.saveWallets(userWallets);
 
-            // Сохранение изменений
-            walletRepository.saveWallets(user.getWallets(), user.getUsername());
             System.out.println("Кошелёк успешно удалён.");
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при удалении кошелька: " + e.getMessage());
         }
     }
 
@@ -127,16 +93,13 @@ public class WalletService {
      */
     public void listWallets(User user) {
         try {
-            // Загружаем список кошельков пользователя из файла
-            List<Wallet> wallets = walletRepository.loadWallets(user.getUsername());
+            List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
 
-            // Проверяем, есть ли кошельки у пользователя
             if (wallets.isEmpty()) {
                 System.out.println("У вас нет кошельков.");
                 return;
             }
 
-            // Выводим список кошельков
             System.out.println("Ваши кошельки:");
             for (Wallet wallet : wallets) {
                 System.out.println("- " + wallet.getName() + " (Баланс: " + wallet.getBalance() + ")");
@@ -147,31 +110,48 @@ public class WalletService {
     }
 
     /**
+     * Валидация имени кошелька.
+     *
+     * @param walletName Название кошелька.
+     */
+    private void validateWalletName(String walletName) {
+        if (!DataValidator.isNonEmptyString(walletName) || !DataValidator.isStringLengthValid(walletName, 50)) {
+            throw new IllegalArgumentException("Некорректное название кошелька.");
+        }
+    }
+
+    /**
+     * Валидация баланса кошелька.
+     *
+     * @param balance Баланс кошелька.
+     */
+    private void validateBalance(double balance) {
+        if (!DataValidator.isPositiveNumber(String.valueOf(balance)) ||
+                !DataValidator.isNumberInRange(balance, 0, 100_000_000)) {
+            throw new IllegalArgumentException("Некорректный баланс.");
+        }
+    }
+
+    /**
      * Подсчитать общий доход и расходы по всем кошелькам.
      *
      * @param user Пользователь.
      */
     public void calculateFinances(User user) {
-        // Инициализация переменных для общего дохода и расходов
         double totalIncome = 0;
         double totalExpenses = 0;
 
-        // Проходим по всем кошелькам пользователя
-        for (Wallet wallet : user.getWallets()) {
-            // Обрабатываем транзакции каждого кошелька
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
             for (Transaction transaction : wallet.getTransactions()) {
-                double amount = transaction.getAmount();
-                if (amount > 0) {
-                    // Если сумма положительная, добавляем к доходу
-                    totalIncome += amount;
+                if (transaction.getAmount() > 0) {
+                    totalIncome += transaction.getAmount();
                 } else {
-                    // Если сумма отрицательная, добавляем к расходам
-                    totalExpenses += amount;
+                    totalExpenses += transaction.getAmount();
                 }
             }
         }
 
-        // Вывод общего дохода и расходов
         System.out.println("Общий доход: " + totalIncome);
         System.out.println("Общие расходы: " + Math.abs(totalExpenses));
     }
@@ -182,137 +162,76 @@ public class WalletService {
      * @param user Пользователь.
      */
     public void displayBudgetData(User user) {
-        // Проходим по всем кошелькам пользователя
-        for (Wallet wallet : user.getWallets()) {
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
             System.out.println("Кошелёк: " + wallet.getName());
-
-            // Выводим все транзакции для текущего кошелька
+            System.out.println("Баланс: " + wallet.getBalance());
             for (Transaction transaction : wallet.getTransactions()) {
-                System.out.println("- Транзакция: " + transaction.getAmount() +
-                        " (" + transaction.getCategory().getName() + ")");
+                System.out.println("- " + transaction);
             }
-
-            // Выводим текущий баланс кошелька
-            System.out.println("Текущий баланс: " + wallet.getBalance());
         }
     }
 
     /**
-     * Добавить транзакцию.
+     * Добавить транзакцию в кошелёк.
      *
-     * @param user          Пользователь.
-     * @param walletName    Название кошелька.
-     * @param amountInput   Сумма транзакции (строка).
-     * @param categoryName  Название категории транзакции.
-     * @param isIncome      Если true, транзакция доходная, иначе расход.
+     * @param user       Пользователь.
+     * @param walletName Название кошелька.
+     * @param amount     Сумма транзакции.
+     * @param category   Категория транзакции.
+     * @param isIncome   Указывает, является ли транзакция доходом.
      */
-    public void addTransaction(User user, String walletName, String amountInput, String categoryName, boolean isIncome) {
+    public void addTransaction(User user, String walletName, double amount, String category, boolean isIncome) {
         try {
-            // Проверка, что название кошелька не пустое
-            if (!DataValidator.isNonEmptyString(walletName)) {
-                throw new IllegalArgumentException("Название кошелька не может быть пустым.");
+            List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+
+            // Ищем кошелёк по имени
+            Wallet targetWallet = null;
+            for (Wallet wallet : wallets) {
+                if (wallet.getName().equals(walletName)) {
+                    targetWallet = wallet;
+                    break;
+                }
             }
 
-            // Проверка длины названия кошелька
-            if (!DataValidator.isStringLengthValid(walletName, 50)) {
-                throw new IllegalArgumentException("Название кошелька не может быть длиннее 50 символов.");
+            if (targetWallet == null) {
+                throw new IllegalArgumentException("Кошелёк с названием \"" + walletName + "\" не найден.");
             }
 
-            // Проверка суммы транзакции
-            double amount;
-            try {
-                amount = Double.parseDouble(amountInput);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Сумма транзакции должна быть числом.");
-            }
+            // Добавляем транзакцию и обновляем баланс
+            double adjustedAmount = isIncome ? amount : -amount;
+            Transaction transaction = new Transaction(adjustedAmount, new Category(category), LocalDate.now());
+            targetWallet.addTransaction(transaction);
 
-            if (!isIncome) {
-                amount = -amount;
-            }
-
-            if (!DataValidator.isNumberInRange(amount, -10_000_000, 10_000_000)) {
-                throw new IllegalArgumentException("Сумма транзакции должна быть в диапазоне от -10 000 000 до 10 000 000.");
-            }
-
-            // Проверка, что категория не пустая
-            if (!DataValidator.isNonEmptyString(categoryName)) {
-                throw new IllegalArgumentException("Название категории не может быть пустым.");
-            }
-
-            // Проверка длины названия категории
-            if (!DataValidator.isStringLengthValid(categoryName, 30)) {
-                throw new IllegalArgumentException("Название категории не может быть длиннее 30 символов.");
-            }
-
-            // Поиск кошелька
-            Wallet wallet = user.findWalletByName(walletName);
-
-            if (wallet == null) {
-                throw new IllegalArgumentException("Кошелёк с таким названием не найден.");
-            }
-
-            // Создание транзакции и добавление её в кошелёк
-            Transaction transaction = new Transaction(amount, new Category(categoryName), LocalDate.now());
-            wallet.addTransaction(transaction);
-
-            // Сохранение транзакции
-            walletRepository.saveTransactions(wallet, user.getUsername());
+            // Сохраняем обновлённый кошелёк
+            walletRepository.saveWallet(targetWallet);
             System.out.println("Транзакция успешно добавлена.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("Ошибка при сохранении транзакции: " + e.getMessage());
+            System.out.println("Ошибка при добавлении транзакции: " + e.getMessage());
         }
     }
 
     /**
-     * Удалить транзакцию.
+     * Удалить транзакцию из кошелька.
      *
      * @param user          Пользователь.
      * @param walletName    Название кошелька.
-     * @param transactionId ID транзакции для удаления.
+     * @param transactionId ID транзакции.
      */
     public void deleteTransaction(User user, String walletName, String transactionId) {
-        try {
-            // Проверка, что название кошелька не пустое
-            if (!DataValidator.isNonEmptyString(walletName)) {
-                throw new IllegalArgumentException("Название кошелька не может быть пустым.");
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
+            if (wallet.getName().equals(walletName)) {
+                Transaction transaction = wallet.findTransactionById(transactionId);
+                if (transaction != null) {
+                    wallet.removeTransaction(transaction);
+                    walletRepository.saveWallet(wallet);
+                    System.out.println("Транзакция успешно удалена.");
+                    return;
+                }
             }
-
-            // Проверка длины названия кошелька
-            if (!DataValidator.isStringLengthValid(walletName, 50)) {
-                throw new IllegalArgumentException("Название кошелька не может быть длиннее 50 символов.");
-            }
-
-            // Проверка, что ID транзакции не пустое
-            if (!DataValidator.isNonEmptyString(transactionId)) {
-                throw new IllegalArgumentException("ID транзакции не может быть пустым.");
-            }
-
-            // Поиск кошелька
-            Wallet wallet = user.findWalletByName(walletName);
-
-            if (wallet == null) {
-                throw new IllegalArgumentException("Кошелёк с таким названием не найден.");
-            }
-
-            // Поиск транзакции
-            Transaction transaction = wallet.findTransactionById(transactionId);
-            if (transaction == null) {
-                throw new IllegalArgumentException("Транзакция с таким ID не найдена.");
-            }
-
-            // Удаление транзакции
-            wallet.removeTransaction(transaction);
-
-            // Сохранение изменений
-            walletRepository.saveTransactions(wallet, user.getUsername());
-            System.out.println("Транзакция успешно удалена.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при удалении транзакции: " + e.getMessage());
         }
+        System.out.println("Кошелёк или транзакция не найдены.");
     }
 
     /**
@@ -320,79 +239,30 @@ public class WalletService {
      *
      * @param user          Пользователь.
      * @param walletName    Название кошелька.
-     * @param transactionId ID транзакции для редактирования.
-     * @param newAmountStr  Новая сумма транзакции.
-     * @param newCategory   Новая категория транзакции.
-     * @param newDateStr    Новая дата транзакции в формате "yyyy-MM-dd".
+     * @param transactionId ID транзакции.
+     * @param newAmount     Новая сумма.
+     * @param newCategory   Новая категория.
      */
-    public void editTransaction(User user, String walletName, String transactionId, String newAmountStr, String newCategory, String newDateStr) {
+    public void editTransaction(User user, String walletName, String transactionId, double newAmount, String newCategory, String newDateStr) {
         try {
-            // Проверка, что название кошелька не пустое
-            if (!DataValidator.isNonEmptyString(walletName)) {
-                throw new IllegalArgumentException("Название кошелька не может быть пустым.");
+            List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+            for (Wallet wallet : wallets) {
+                if (wallet.getName().equals(walletName)) {
+                    Transaction transaction = wallet.findTransactionById(transactionId);
+                    if (transaction != null) {
+                        transaction.setAmount(newAmount);
+                        transaction.setCategory(new Category(newCategory));
+                        transaction.setDate(LocalDate.parse(newDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+                        walletRepository.saveWallet(wallet);
+                        System.out.println("Транзакция успешно отредактирована.");
+                        return;
+                    }
+                }
             }
-
-            // Проверка длины названия кошелька
-            if (!DataValidator.isStringLengthValid(walletName, 50)) {
-                throw new IllegalArgumentException("Название кошелька не может быть длиннее 50 символов.");
-            }
-
-            // Проверка, что ID транзакции не пустое
-            if (!DataValidator.isNonEmptyString(transactionId)) {
-                throw new IllegalArgumentException("ID транзакции не может быть пустым.");
-            }
-
-            // Поиск кошелька
-            Wallet wallet = user.findWalletByName(walletName);
-
-            if (wallet == null) {
-                throw new IllegalArgumentException("Кошелёк с таким названием не найден.");
-            }
-
-            // Поиск транзакции
-            Transaction transaction = wallet.findTransactionById(transactionId);
-            if (transaction == null) {
-                throw new IllegalArgumentException("Транзакция с таким ID не найдена.");
-            }
-
-            // Проверка суммы транзакции
-            double newAmount;
-            try {
-                newAmount = Double.parseDouble(newAmountStr);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Сумма должна быть числом.");
-            }
-
-            if (!DataValidator.isNumberInRange(newAmount, -10_000_000, 10_000_000)) {
-                throw new IllegalArgumentException("Сумма транзакции должна быть в диапазоне от -10 000 000 до 10 000 000.");
-            }
-
-            // Проверка категории
-            if (!DataValidator.isNonEmptyString(newCategory)) {
-                throw new IllegalArgumentException("Название категории не может быть пустым.");
-            }
-
-            if (!DataValidator.isStringLengthValid(newCategory, 30)) {
-                throw new IllegalArgumentException("Название категории не может быть длиннее 30 символов.");
-            }
-
-            // Проверка даты транзакции
-            if (!DataValidator.isValidDate(newDateStr, "yyyy-MM-dd")) {
-                throw new IllegalArgumentException("Некорректный формат даты. Ожидается формат yyyy-MM-dd.");
-            }
-
-            // Обновление данных транзакции
-            transaction.setAmount(newAmount);
-            transaction.setCategory(new Category(newCategory));
-            transaction.setDate(LocalDate.parse(newDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-
-            // Сохранение изменений
-            walletRepository.saveTransactions(wallet, user.getUsername());
-            System.out.println("Транзакция успешно отредактирована.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
+            System.out.println("Кошелёк или транзакция не найдены.");
         } catch (Exception e) {
-            System.out.println("Ошибка при сохранении изменений: " + e.getMessage());
+            System.out.println("Ошибка при редактировании транзакции: " + e.getMessage());
         }
     }
 
@@ -402,70 +272,39 @@ public class WalletService {
      * @param user Пользователь.
      */
     public void calculateByCategories(User user) {
-        // Словарь для хранения итоговых сумм по категориям
-        Map<String, Double> totals = new HashMap<>();
+        Map<String, Double> categoryTotals = new HashMap<>();
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
 
-        // Проходим по всем кошелькам пользователя
-        for (Wallet wallet : user.getWallets()) {
-            // Для каждого кошелька обрабатываем транзакции
+        for (Wallet wallet : wallets) {
             for (Transaction transaction : wallet.getTransactions()) {
-                String categoryName = transaction.getCategory().getName();
-                double currentTotal = totals.getOrDefault(categoryName, 0.0);
-                totals.put(categoryName, currentTotal + transaction.getAmount());
+                String category = transaction.getCategory().getName();
+                categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + transaction.getAmount());
             }
         }
 
-        // Проверка наличия данных для подсчёта
-        if (totals.isEmpty()) {
-            System.out.println("Нет данных для подсчёта.");
-            return;
-        }
-
-        // Вывод итогов по категориям
         System.out.println("Доходы и расходы по категориям:");
-        for (Map.Entry<String, Double> entry : totals.entrySet()) {
+        for (Map.Entry<String, Double> entry : categoryTotals.entrySet()) {
             System.out.println("- " + entry.getKey() + ": " + entry.getValue());
         }
     }
 
     /**
-     * Отобразить список транзакций для кошелька.
+     * Вывести список транзакций для указанного кошелька.
      *
      * @param user       Пользователь.
      * @param walletName Название кошелька.
      */
     public void listTransactions(User user, String walletName) {
-        try {
-            // Проверка, что название кошелька не пустое
-            if (!DataValidator.isNonEmptyString(walletName)) {
-                throw new IllegalArgumentException("Название кошелька не может быть пустым.");
-            }
-
-            // Поиск кошелька
-            Wallet wallet = user.findWalletByName(walletName);
-
-            if (wallet == null) {
-                throw new IllegalArgumentException("Кошелёк с названием \"" + walletName + "\" не найден.");
-            }
-
-            // Загрузка транзакций
-            List<Transaction> transactions = walletRepository.loadTransactions(walletName, user.getUsername());
-
-            // Проверяем наличие транзакций
-            if (transactions.isEmpty()) {
-                System.out.println("Транзакции отсутствуют.");
-            } else {
-                // Вывод транзакций
+        List<Wallet> wallets = walletRepository.loadWalletsByUser(user.getUsername());
+        for (Wallet wallet : wallets) {
+            if (wallet.getName().equals(walletName)) {
                 System.out.println("Транзакции для кошелька \"" + walletName + "\":");
-                for (Transaction transaction : transactions) {
-                    System.out.println("- " + transaction.getDate() + ": " + transaction.getAmount() +
-                            " (" + transaction.getCategory().getName() + ")");
+                for (Transaction transaction : wallet.getTransactions()) {
+                    System.out.println("- " + transaction);
                 }
+                return;
             }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Ошибка при загрузке транзакций: " + e.getMessage());
         }
+        System.out.println("Кошелёк с названием \"" + walletName + "\" не найден.");
     }
 }

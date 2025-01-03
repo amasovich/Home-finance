@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 /**
  * Главный класс приложения "Домашние финансы".
- * Отвечает за инициализацию компонентов и запуск приложения.
+ * Отвечает за инициализацию компонентов и запуск главного меню приложения.
  */
 public class FinanceApp {
 
@@ -29,57 +29,130 @@ public class FinanceApp {
         // Инициализация сервисов
         UserService userService = new UserService(userRepository);
         WalletService walletService = new WalletService(walletRepository);
-        BudgetService budgetService = new BudgetService();
+        BudgetService budgetService = new BudgetService(walletRepository);
 
-        // Авторизация пользователя
+        // Инициализация контроллеров
         UserController userController = new UserController(userService, scanner);
-        userController.start();
-        User currentUser = userService.getCurrentUser();
-
-        if (currentUser == null) {
-            System.out.println("Авторизация не выполнена. Завершение работы приложения.");
-            return;
-        }
-
-        // Инициализация контроллеров для текущего пользователя
-        WalletController walletController = new WalletController(walletService, currentUser, scanner);
-        BudgetController budgetController = new BudgetController(budgetService, currentUser, scanner);
-        TransactionController transactionController = new TransactionController(walletService, currentUser, scanner);
 
         // Запуск главного меню
-        mainMenu(scanner, userController, walletController, budgetController, transactionController);
+        mainMenu(scanner, userController, userService, walletService, budgetService);
     }
 
     /**
      * Главное меню приложения.
      *
-     * @param scanner               Сканер для пользовательского ввода.
-     * @param userController        Контроллер управления пользователями.
-     * @param walletController      Контроллер управления кошельками.
-     * @param budgetController      Контроллер управления категориями и бюджетами.
-     * @param transactionController Контроллер управления транзакциями.
+     * @param scanner         Сканер для пользовательского ввода.
+     * @param userController  Контроллер управления пользователями.
+     * @param userService     Сервис для работы с пользователями.
+     * @param walletService   Сервис для работы с кошельками.
+     * @param budgetService   Сервис для работы с бюджетом.
      */
-    private static void mainMenu(Scanner scanner, UserController userController, WalletController walletController,
-                                 BudgetController budgetController, TransactionController transactionController) {
+    private static void mainMenu(Scanner scanner, UserController userController, UserService userService,
+                                 WalletService walletService, BudgetService budgetService) {
         while (true) {
             System.out.println("Добро пожаловать в приложение \"Домашние финансы\"!");
-            System.out.println("1. Управление пользователями");
-            System.out.println("2. Управление кошельками");
-            System.out.println("3. Управление категориями и бюджетами");
-            System.out.println("4. Управление транзакциями");
-            System.out.println("5. Выход");
+            System.out.println("1. Войти");
+            System.out.println("2. Зарегистрироваться");
+            System.out.println("3. Выйти");
 
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1" -> userController.start();
-                case "2" -> walletController.start();
-                case "3" -> budgetController.start();
-                case "4" -> transactionController.start();
-                case "5" -> {
-                    System.out.println("Спасибо за использование приложения \"Домашние финансы\"! До свидания!");
-                    return;
+            try {
+                String choice = scanner.nextLine();
+                switch (choice) {
+                    case "1" -> {
+                        User currentUser = authenticate(scanner, userService);
+                        if (currentUser != null) {
+                            System.out.println("Авторизация успешна. Добро пожаловать, " + currentUser.getUsername() + "!");
+                            manageUserSession(scanner, currentUser, userController, walletService, budgetService);
+                        } else {
+                            System.out.println("Авторизация не выполнена. Проверьте логин и пароль.");
+                        }
+                    }
+                    case "2" -> register(scanner, userService);
+                    case "3" -> {
+                        System.out.println("Спасибо за использование приложения \"Домашние финансы\"! До свидания!");
+                        return;
+                    }
+                    default -> System.out.println("Неверный выбор. Попробуйте снова.");
                 }
-                default -> System.out.println("Неверный выбор. Пожалуйста, попробуйте снова.");
+            } catch (Exception e) {
+                System.out.println("Произошла ошибка: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Метод для авторизации пользователя.
+     *
+     * @param scanner     Сканер для ввода данных.
+     * @param userService Сервис для работы с пользователями.
+     * @return Авторизованный пользователь или null, если авторизация не удалась.
+     */
+    private static User authenticate(Scanner scanner, UserService userService) {
+        System.out.print("Введите логин: ");
+        String username = scanner.nextLine();
+        System.out.print("Введите пароль: ");
+        String password = scanner.nextLine();
+
+        if (userService.authenticateUser(username, password)) {
+            return userService.getCurrentUser();
+        }
+        return null;
+    }
+
+    /**
+     * Метод для регистрации нового пользователя.
+     *
+     * @param scanner     Сканер для ввода данных.
+     * @param userService Сервис для работы с пользователями.
+     */
+    private static void register(Scanner scanner, UserService userService) {
+        System.out.print("Введите логин: ");
+        String username = scanner.nextLine();
+        System.out.print("Введите пароль: ");
+        String password = scanner.nextLine();
+
+        userService.registerUser(username, password);
+        System.out.println("Регистрация успешно завершена.");
+    }
+
+    /**
+     * Меню после авторизации пользователя.
+     *
+     * @param scanner       Сканер для пользовательского ввода.
+     * @param currentUser   Авторизованный пользователь.
+     * @param userController Контроллер управления пользователями.
+     * @param walletService Сервис для работы с кошельками.
+     * @param budgetService Сервис для работы с бюджетом.
+     */
+    private static void manageUserSession(Scanner scanner, User currentUser, UserController userController,
+                                          WalletService walletService, BudgetService budgetService) {
+        WalletController walletController = new WalletController(walletService, currentUser, scanner);
+        BudgetController budgetController = new BudgetController(budgetService, currentUser, scanner);
+        TransactionController transactionController = new TransactionController(walletService, currentUser, scanner);
+
+        while (true) {
+            System.out.println("Меню пользователя:");
+            System.out.println("1. Управление кошельками");
+            System.out.println("2. Управление категориями и бюджетами");
+            System.out.println("3. Управление транзакциями");
+            System.out.println("4. Управление аккаунтом");
+            System.out.println("5. Выйти из аккаунта");
+
+            try {
+                String choice = scanner.nextLine();
+                switch (choice) {
+                    case "1" -> walletController.start();
+                    case "2" -> budgetController.start();
+                    case "3" -> transactionController.start();
+                    case "4" -> userController.start();
+                    case "5" -> {
+                        System.out.println("Выход из аккаунта...");
+                        return;
+                    }
+                    default -> System.out.println("Неверный выбор. Попробуйте снова.");
+                }
+            } catch (Exception e) {
+                System.out.println("Произошла ошибка: " + e.getMessage());
             }
         }
     }

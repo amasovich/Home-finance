@@ -1,6 +1,7 @@
 package com.beryoza.financeapp.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +13,12 @@ import java.util.List;
  * Предоставляет методы для сохранения и загрузки данных.
  */
 public abstract class FileRepository {
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Для работы с JSON
+    protected final ObjectMapper objectMapper;
+
+    public FileRepository() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Регистрация модуля для LocalDate
+    }
 
     /**
      * Сохранить данные в файл.

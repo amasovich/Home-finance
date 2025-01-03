@@ -1,20 +1,21 @@
 package com.beryoza.financeapp.controller;
 
 import com.beryoza.financeapp.service.UserService;
+
 import java.util.Scanner;
 
 /**
  * Контроллер для управления пользователями.
  */
 public class UserController {
-    private final UserService userService; // Сервис для управления пользователями
-    private final Scanner scanner; // Сканер для чтения ввода с консоли
+    private final UserService userService;
+    private final Scanner scanner;
 
     /**
-     * Конструктор. Инициализирует контроллер с сервисом пользователей.
+     * Конструктор для инициализации UserController.
      *
      * @param userService Сервис для работы с пользователями.
-     * @param scanner Сканер для чтения пользовательского ввода.
+     * @param scanner     Сканер для чтения пользовательского ввода.
      */
     public UserController(UserService userService, Scanner scanner) {
         this.userService = userService;
@@ -22,54 +23,39 @@ public class UserController {
     }
 
     /**
-     * Запускает главный цикл меню для управления пользователями.
+     * Меню управления пользователями.
      */
     public void start() {
-        System.out.println("Добро пожаловать! Выберите действие:");
+        System.out.println("Управление аккаунтом:");
         while (true) {
-            System.out.println("1. Зарегистрироваться");
-            System.out.println("2. Авторизоваться");
-            System.out.println("3. Изменить логин");
-            System.out.println("4. Изменить пароль");
-            System.out.println("5. Вернуться в главное меню");
+            System.out.println("1. Изменить логин");
+            System.out.println("2. Изменить пароль");
+            System.out.println("3. Вернуться в главное меню");
 
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1" -> register();
-                case "2" -> login();
-                case "3" -> changeUsername();
-                case "4" -> changePassword();
-                case "5" -> {
-                    System.out.println("Выход в главное меню.");
-                    return;
+            try {
+                String choice = scanner.nextLine();
+                switch (choice) {
+                    case "1" -> changeUsername();
+                    case "2" -> changePassword();
+                    case "3" -> {
+                        System.out.println("Возврат в главное меню.");
+                        return;
+                    }
+                    default -> System.out.println("Неверный выбор. Попробуйте снова.");
                 }
-                default -> System.out.println("Неверный выбор. Попробуйте снова.");
+            } catch (Exception e) {
+                System.out.println("Ошибка: " + e.getMessage());
             }
         }
     }
 
     /**
-     * Метод для регистрации нового пользователя.
+     * Метод для изменения логина пользователя.
      */
-    private void register() {
-        System.out.print("Введите логин: ");
-        String username = scanner.nextLine();
-        System.out.print("Введите пароль: ");
-        String password = scanner.nextLine();
-
-        userService.registerUser(username, password);
-    }
-
-    /**
-     * Метод для авторизации пользователя.
-     */
-    private void login() {
-        System.out.print("Введите логин: ");
-        String username = scanner.nextLine();
-        System.out.print("Введите пароль: ");
-        String password = scanner.nextLine();
-
-        userService.authenticateUser(username, password);
+    private void changeUsername() {
+        System.out.print("Введите новый логин: ");
+        String newUsername = scanner.nextLine();
+        userService.changeUsername(newUsername);
     }
 
     /**
@@ -80,19 +66,6 @@ public class UserController {
         String oldPassword = scanner.nextLine();
         System.out.print("Введите новый пароль: ");
         String newPassword = scanner.nextLine();
-
         userService.changePassword(oldPassword, newPassword);
-    }
-
-    /**
-     * Метод для изменения логина пользователя.
-     */
-    private void changeUsername() {
-        System.out.print("Введите старый логин: ");
-        String oldUsername = scanner.nextLine();
-        System.out.print("Введите новый логин: ");
-        String newUsername = scanner.nextLine();
-
-        userService.changeUsername(oldUsername, newUsername);
     }
 }

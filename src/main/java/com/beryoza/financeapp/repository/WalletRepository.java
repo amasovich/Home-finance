@@ -9,121 +9,175 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Репозиторий для работы с данными кошельков и транзакций.
- * Сохраняет и загружает кошельки вместе с их транзакциями для каждого пользователя.
+ * Репозиторий для работы с кошельками и транзакциями.
+ * Хранит данные кошельков в одном файле, фильтруя их по userId.
  */
 public class WalletRepository extends FileRepository {
-    // Шаблон пути к файлу для каждого пользователя
-    private static final String FILE_PATH_TEMPLATE = "data/wallets/wallets_%s.json";
+    // Путь к файлу для хранения всех кошельков
+    private static final String FILE_PATH = "data/wallets/wallets.json";
 
     /**
-     * Конструктор. При создании экземпляра репозитория проверяет
-     * наличие необходимой директории и создаёт её, если она отсутствует.
+     * Конструктор. Проверяет наличие директории и файла для кошельков.
+     * Если они отсутствуют, создаёт их.
      */
     public WalletRepository() {
         ensureDirectoriesExist();
+        ensureFileExists();
     }
 
     /**
-     * Проверить наличие директории для хранения данных пользователей
-     * и создать её, если она отсутствует.
+     * Проверяет наличие директории для хранения данных.
+     * Если директория отсутствует, создаёт её.
      */
     private void ensureDirectoriesExist() {
         File directory = new File("data/wallets");
         if (!directory.exists()) {
-            directory.mkdirs();
+            directory.mkdirs(); // Создаём директорию
         }
     }
 
     /**
-     * Сохранить список кошельков пользователя в файл.
+     * Проверяет наличие файла для хранения кошельков.
+     * Если файл отсутствует или пустой, создаёт его и инициализирует пустым списком.
+     */
+    private void ensureFileExists() {
+        File file = new File(FILE_PATH);
+        try {
+            if (!file.exists() || file.length() == 0) {
+                file.createNewFile(); // Создаём файл
+                saveWallets(new ArrayList<>()); // Сохраняем пустой список
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при создании файла кошельков: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Сохранить список кошельков в файл.
      *
      * @param wallets Список кошельков для сохранения.
-     * @param userId  ID пользователя.
      */
-    public void saveWallets(List<Wallet> wallets, String userId) {
-        String filePath = String.format(FILE_PATH_TEMPLATE, userId);
+    public void saveWallets(List<Wallet> wallets) {
         try {
-            saveDataToFile(filePath, wallets);
+            saveDataToFile(FILE_PATH, wallets); // Используем метод из FileRepository
+            System.out.println("Данные кошельков успешно сохранены.");
         } catch (IOException e) {
-            System.err.println("Ошибка при сохранении кошельков для пользователя " + userId + ": " + e.getMessage());
+            System.err.println("Ошибка при сохранении кошельков: " + e.getMessage());
         }
     }
 
     /**
-     * Загрузить список кошельков пользователя из файла.
+     * Загрузить список всех кошельков из файла.
      *
-     * @param userId ID пользователя.
-     * @return Список кошельков.
+     * @return Список всех кошельков.
      */
-    public List<Wallet> loadWallets(String userId) {
-        String filePath = String.format(FILE_PATH_TEMPLATE, userId);
+    public List<Wallet> loadWallets() {
         try {
-            return loadDataFromFile(filePath, Wallet.class);
+            // Загружаем список кошельков из файла
+            List<Wallet> wallets = loadDataFromFile(FILE_PATH, Wallet.class);
+            if (wallets == null) {
+                wallets = new ArrayList<>(); // Возвращаем пустой список, если файл пустой
+            }
+            return wallets;
         } catch (IOException e) {
-            System.err.println("Ошибка при загрузке кошельков для пользователя " + userId + ": " + e.getMessage());
-            return List.of(); // Возвращаем пустой список при ошибке
+            System.err.println("Ошибка при загрузке кошельков: " + e.getMessage());
+            return new ArrayList<>(); // Возвращаем пустой список при ошибке
         }
     }
 
     /**
-     * Сохранить транзакции конкретного кошелька.
+     * Загружает кошельки для указанного пользователя.
      *
-     * @param wallet Кошелёк, транзакции которого нужно сохранить.
-     * @param userId ID пользователя.
+     * @param userId Идентификатор пользователя.
+     * @return Список кошельков, принадлежащих пользователю.
      */
-    public void saveTransactions(Wallet wallet, String userId) {
-        String filePath = String.format(FILE_PATH_TEMPLATE, userId);
-        try {
-            // Загружаем текущий список кошельков напрямую из файла
-            List<Wallet> wallets = loadDataFromFile(filePath, Wallet.class);
+    public List<Wallet> loadWalletsByUser(String userId) {
+        List<Wallet> allWallets = loadWallets(); // Загружаем все кошельки
+        List<Wallet> userWallets = new ArrayList<>();
+        for (Wallet wallet : allWallets) {
+            if (wallet.getUserId().equals(userId)) {
+                userWallets.add(wallet); // Фильтруем по userId
+            }
+        }
+        return userWallets;
+    }
 
-            // Флаг для проверки, найден ли кошелёк
-            boolean walletFound = false;
+    /**
+     * Сохранить или обновить кошелёк.
+     *
+     * @param wallet Кошелёк для сохранения.
+     */
+    public void saveWallet(Wallet wallet) {
+        try {
+            List<Wallet> wallets = loadWallets(); // Загружаем все кошельки
+
+            boolean walletUpdated = false;
 
             // Обновляем существующий кошелёк
             for (int i = 0; i < wallets.size(); i++) {
-                if (wallets.get(i).getName().equals(wallet.getName())) {
-                    wallets.set(i, wallet); // Обновляем существующий кошелёк
-                    walletFound = true;
+                Wallet existingWallet = wallets.get(i);
+                if (existingWallet.getUserId().equals(wallet.getUserId()) &&
+                        existingWallet.getName().equals(wallet.getName())) {
+                    wallets.set(i, wallet); // Обновляем данные кошелька
+                    walletUpdated = true;
                     break;
                 }
             }
 
-            // Если кошелёк не найден, выбрасываем исключение
-            if (!walletFound) {
-                throw new IllegalArgumentException("Кошелёк с именем \"" + wallet.getName() + "\" не найден.");
+            // Если кошелёк не найден, добавляем новый
+            if (!walletUpdated) {
+                wallets.add(wallet);
             }
 
-            // Сохраняем обновлённый список обратно в файл
-            saveDataToFile(filePath, wallets);
-        } catch (IllegalArgumentException e) {
-            System.err.println("Ошибка: " + e.getMessage());
+            // Сохраняем обновлённый список кошельков
+            saveWallets(wallets);
         } catch (Exception e) {
-            System.err.println("Ошибка при сохранении транзакций для кошелька \"" + wallet.getName() + "\": " + e.getMessage());
+            System.err.println("Ошибка при сохранении кошелька: " + e.getMessage());
         }
     }
 
     /**
-     * Загрузить транзакции для конкретного кошелька.
+     * Сохранить транзакции для указанного кошелька.
+     *
+     * @param wallet Кошелёк, транзакции которого нужно сохранить.
+     */
+    public void saveTransactions(Wallet wallet) {
+        List<Wallet> wallets = loadWallets(); // Загружаем все кошельки
+        boolean walletFound = false;
+
+        // Обновляем существующий кошелёк
+        for (int i = 0; i < wallets.size(); i++) {
+            if (wallets.get(i).getName().equals(wallet.getName()) &&
+                    wallets.get(i).getUserId().equals(wallet.getUserId())) {
+                wallets.set(i, wallet); // Обновляем транзакции кошелька
+                walletFound = true;
+                break;
+            }
+        }
+
+        // Если кошелёк не найден, выбрасываем исключение
+        if (!walletFound) {
+            throw new IllegalArgumentException("Кошелёк с названием \"" + wallet.getName() +
+                    "\" не найден для пользователя \"" + wallet.getUserId() + "\".");
+        }
+
+        saveWallets(wallets); // Сохраняем изменения
+    }
+
+    /**
+     * Загружает транзакции для указанного кошелька.
      *
      * @param walletName Название кошелька.
-     * @param userId     ID пользователя.
-     * @return Список транзакций.
+     * @param userId     Идентификатор пользователя.
+     * @return Список транзакций, связанных с кошельком.
      */
     public List<Transaction> loadTransactions(String walletName, String userId) {
-        String filePath = String.format(FILE_PATH_TEMPLATE, userId);
-        try {
-            List<Wallet> wallets = loadDataFromFile(filePath, Wallet.class);
-            for (Wallet wallet : wallets) {
-                if (wallet.getName().equals(walletName)) {
-                    return wallet.getTransactions();
-                }
+        List<Wallet> wallets = loadWalletsByUser(userId); // Загружаем кошельки пользователя
+        for (Wallet wallet : wallets) {
+            if (wallet.getName().equals(walletName)) {
+                return wallet.getTransactions(); // Возвращаем список транзакций
             }
-            return new ArrayList<>(); // Если кошелёк не найден
-        } catch (Exception e) {
-            System.err.println("Ошибка при загрузке транзакций для кошелька \"" + walletName + "\": " + e.getMessage());
-            return new ArrayList<>();
         }
+        return new ArrayList<>(); // Если кошелёк не найден
     }
 }

@@ -1,21 +1,26 @@
 package com.beryoza.financeapp.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Класс для представления пользователя.
  * Хранит информацию о логине и пароле.
- * Данные о кошельках пользователя теперь хранятся отдельно.
+ * Данные о кошельках пользователя хранятся отдельно.
  */
 public class User {
     private String username; // Логин пользователя
     private String password; // Пароль пользователя
 
     /**
-     * Конструктор для создания пользователя.
+     * Конструктор для десериализации Jackson.
      *
      * @param username Логин пользователя.
      * @param password Пароль пользователя.
      */
-    public User(String username, String password) {
+    @JsonCreator
+    public User(@JsonProperty("username") String username,
+                @JsonProperty("password") String password) {
         this.username = username;
         this.password = password;
     }

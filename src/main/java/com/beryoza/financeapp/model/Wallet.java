@@ -1,5 +1,8 @@
 package com.beryoza.financeapp.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,22 +13,38 @@ import java.util.List;
  */
 public class Wallet {
     private String userId; // Идентификатор пользователя, которому принадлежит кошелёк
-    private String name; // Название кошелька
+    private String name;   // Название кошелька
     private double balance; // Баланс кошелька
     private List<Transaction> transactions; // Список транзакций по кошельку
 
     /**
-     * Конструктор для создания кошелька.
+     * Конструктор для десериализации Jackson.
      *
-     * @param userId  Идентификатор пользователя, которому принадлежит кошелёк.
+     * @param userId       Идентификатор пользователя.
+     * @param name         Название кошелька.
+     * @param balance      Баланс кошелька.
+     * @param transactions Список транзакций.
+     */
+    @JsonCreator
+    public Wallet(@JsonProperty("userId") String userId,
+                  @JsonProperty("name") String name,
+                  @JsonProperty("balance") double balance,
+                  @JsonProperty("transactions") List<Transaction> transactions) {
+        this.userId = userId;
+        this.name = name;
+        this.balance = balance;
+        this.transactions = transactions != null ? transactions : new ArrayList<>();
+    }
+
+    /**
+     * Конструктор для создания нового кошелька.
+     *
+     * @param userId  Идентификатор пользователя.
      * @param name    Название кошелька.
      * @param balance Начальный баланс кошелька.
      */
     public Wallet(String userId, String name, double balance) {
-        this.userId = userId;
-        this.name = name;
-        this.balance = balance;
-        this.transactions = new ArrayList<>();
+        this(userId, name, balance, new ArrayList<>());
     }
 
     /**
